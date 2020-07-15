@@ -1,0 +1,145 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option go_package = "idl/model";
+option java_multiple_files = true;
+option java_package = "io.grpc.chat";
+option java_outer_classname = "ChatDomain";
+
+package model;
+
+import "google/protobuf/timestamp.proto";
+
+message OpenStream {
+    string name = 1;
+}
+message ChatWith {
+    string name = 1;
+    string peer = 2;
+}
+message Invite {
+    string name = 1;
+}
+
+message Join {
+    string name = 1;
+}
+message Leave {
+    string name = 1;
+}
+message Kick {
+    string name = 1;
+}
+message Message {
+    string uid = 2;
+    string tid = 3;
+    string lid = 4; // optional for response
+    string message = 5;
+}
+
+message Users {
+    repeated string users = 2;
+}
+
+message Rooms {
+    string uid = 1;
+    repeated string cids = 2;
+}
+
+message ReadInfo {
+    string uid = 1;
+    string rm_lid = 2;
+}
+
+message ChatIn {
+    string uid = 2;
+    string ci_checksum = 3;
+    string cp_checksum = 4;
+    repeated string active_uids = 5;
+    repeated ReadInfo read_infos = 6;
+}
+
+message ChatOut {
+    string uid = 2;
+    string lm_lid = 3;
+    string rm_lid = 4;
+    string sc_checksum = 5;
+}
+
+message Shutdown {
+}
+
+enum PayloadType {
+    OPENSTREAM = 0;
+    CHATWITH = 1;
+    INVITE = 2;
+    JOIN = 3;
+    LEAVE = 4;
+    KICK = 5;
+    MESSAGE = 6;
+    GETUSERS = 7;
+    GETROOMS = 8;
+    CHATIN = 9;
+    CHATOUT = 10;
+    SHUTDOWN = 99;
+}
+
+message Payload {
+    oneof payload {
+        OpenStream stream = 1;
+        ChatWith chat_with = 2; // 1:1 Chat
+        Invite invite = 3; // Group Chat
+        Join join = 4; // Open Chat
+        Leave leave = 5; // 1:1 or Group Chat
+        Kick kick = 6; // Open Chat
+        Message message = 7; // Message
+        Users  users = 8;
+        Rooms rooms = 9;
+        ChatIn chat_in = 10;
+        ChatOut chat_out = 11;
+        Shutdown shutdown = 99;
+    }
+}
+
+message Request {
+    google.protobuf.Timestamp timestamp = 1;
+    PayloadType pldType = 2;
+    Payload payload = 3;
+    string cid = 4;
+}
+
+message Response {
+    google.protobuf.Timestamp timestamp = 1;
+    PayloadType pldType = 2;
+    Payload payload = 3;
+    string cid = 4;
+}
+
+message Receive {
+    google.protobuf.Timestamp timestamp = 1;
+    PayloadType pldType = 2;
+    Payload payload = 3;
+    string cid = 4;
+}
+
+message DeliveryRequest {
+    Receive recv = 1;
+    repeated string uids = 2;
+}
+
+message DeliveryResponse {
+    repeated string not_found = 1;
+}
