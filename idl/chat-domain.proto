@@ -52,34 +52,53 @@ message Message {
 
 message Users {
     repeated string users = 2;
+    Pagination pagination = 3;
 }
 
 message Rooms {
     string uid = 1;
     repeated string cids = 2;
+    Pagination pagination = 3;
 }
 
 message ReadInfo {
     string uid = 1;
-    string rm_lid = 2;
+    string read_msg_lid = 2;
 }
 
 message ChatIn {
     string uid = 2;
-    string ci_checksum = 3;
-    string cp_checksum = 4;
+    string chat_in_checksum = 3;
+    string chat_public_checksum = 4;
     repeated string active_uids = 5;
     repeated ReadInfo read_infos = 6;
 }
 
 message ChatOut {
     string uid = 2;
-    string lm_lid = 3;
-    string rm_lid = 4;
-    string sc_checksum = 5;
+    string last_msg_lid = 3;
+    string read_msg_lid = 4;
+    string sync_chat_checksum = 5;
 }
 
 message Shutdown {
+}
+
+message Messages {
+    repeated Message messages = 2;
+    Pagination pagination = 3;
+    string last_lid = 4;
+}
+
+message Pagination {
+    int32 page_size = 1;
+    int32 page_token = 2;
+    int32 next_page_token = 3;
+}
+
+message Ack {
+    string uid = 1;
+    string lid = 2;
 }
 
 enum PayloadType {
@@ -94,6 +113,9 @@ enum PayloadType {
     GETROOMS = 8;
     CHATIN = 9;
     CHATOUT = 10;
+    GETMESSAGES = 11;
+    RECEIVEACK = 12;
+    READACK = 13;
     SHUTDOWN = 99;
 }
 
@@ -110,6 +132,8 @@ message Payload {
         Rooms rooms = 9;
         ChatIn chat_in = 10;
         ChatOut chat_out = 11;
+        Messages messages = 12;
+        Ack ack = 13;
         Shutdown shutdown = 99;
     }
 }
@@ -133,6 +157,7 @@ message Receive {
     PayloadType pldType = 2;
     Payload payload = 3;
     string cid = 4;
+    string senderUid = 5;
 }
 
 message DeliveryRequest {

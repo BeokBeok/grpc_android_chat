@@ -31,6 +31,9 @@ service Chat {
   rpc GetRooms(Request) returns (ResponseWithError) {}
   rpc ChatIn(Request) returns (ResponseWithError) {}
   rpc ChatOut(Request) returns (ResponseWithError) {}
+  rpc GetMessages(Request) returns (ResponseWithError) {}
+  rpc ReceiveAck(Request) returns (ResponseWithError) {}
+  rpc ReadAck(Request) returns (ResponseWithError) {}
 }
 
 service ChatRoute {
