@@ -6,17 +6,11 @@ import com.google.protobuf.Timestamp
 import io.grpc.ManagedChannel
 import io.grpc.Metadata
 import io.grpc.android.AndroidChannelBuilder
-import io.grpc.chat.ChatGrpcKt
-import io.grpc.chat.OpenStream
-import io.grpc.chat.Payload
-import io.grpc.chat.Request
+import io.grpc.chat.*
 import io.grpc.stub.MetadataUtils
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -43,7 +37,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         setupEventListen()
+        setupChatWith()
     }
 
     private fun setupEventListen() {
@@ -63,6 +59,29 @@ class MainActivity : AppCompatActivity() {
                 chatBlockingStub.eventListen(request).collect { receive ->
                     println("$receive")
                 }
+            }
+        }
+    }
+
+    private fun setupChatWith() {
+        btn_chat_with.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                val chatWithModel = ChatWith.newBuilder().apply {
+                    name = "yunsu"
+                    peer = name
+                }.build()
+
+                val payloadModel = Payload.newBuilder().apply {
+                    chatWith = chatWithModel
+                }.build()
+
+                val request = Request.newBuilder().apply {
+                    pldType = PayloadType.CHATWITH
+                    payload = payloadModel
+                }.build()
+
+                val result = async { chatBlockingStub.chatWith(request) }
+                println("cid is ${result.await().resp.cid}")
             }
         }
     }
