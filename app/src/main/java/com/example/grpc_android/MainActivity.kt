@@ -34,6 +34,11 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private val coroutineExceptionHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            throwable.printStackTrace()
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -49,7 +54,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupEventListen() {
         btn_event_listen.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
                 val payloadModel = Payload.newBuilder().apply {
                     stream = OpenStream.newBuilder().apply {
                         name = "yunsu"
@@ -73,7 +78,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupChatWith() {
         btn_chat_with.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
                 val chatWithModel = ChatWith.newBuilder().apply {
                     name = "yunsu"
                     peer = name
@@ -99,7 +104,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupChatIn() {
         btn_chat_in.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
                 val chatInModel = ChatIn.newBuilder().apply {
                     uid = "yunsu"
                     chatPublicChecksum = "00000000000000000"
@@ -127,7 +132,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupChatOut() {
         btn_chat_out.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
                 val chatOutModel = ChatOut.newBuilder().apply {
                     uid = "yunsu"
                     lastMsgLid = "0"
