@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         setupEventListen()
         setupChatWith()
         setupChatIn()
+        setupChatOut()
     }
 
     /**
@@ -116,6 +117,33 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.chatIn(request) }
+                println("cid is ${result.await().resp.cid}")
+            }
+        }
+    }
+
+    /**
+     * 채팅방 퇴장
+     */
+    private fun setupChatOut() {
+        btn_chat_out.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                val chatOutModel = ChatOut.newBuilder().apply {
+                    uid = "yunsu"
+                    lastMsgLid = "0"
+                }.build()
+
+                val payloadModel = Payload.newBuilder().apply {
+                    chatOut = chatOutModel
+                }.build()
+
+                val request = Request.newBuilder().apply {
+                    cid = "1000000005f102077101007"
+                    pldType = PayloadType.CHATOUT
+                    payload = payloadModel
+                }.build()
+
+                val result = async { chatBlockingStub.chatOut(request) }
                 println("cid is ${result.await().resp.cid}")
             }
         }
