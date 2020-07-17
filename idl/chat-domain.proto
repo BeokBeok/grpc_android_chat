@@ -101,6 +101,16 @@ message Ack {
     string lid = 2;
 }
 
+message SyncChats {
+    string uid = 2;
+    string last_cid = 3;
+    int32 fetch_count = 4;
+    string sync_chat_checksum = 5;
+    repeated string del_cids = 6;
+    repeated string upd_cids = 7;
+    bool eof = 8;
+}
+
 enum PayloadType {
     OPENSTREAM = 0;
     CHATWITH = 1;
@@ -116,6 +126,7 @@ enum PayloadType {
     GETMESSAGES = 11;
     RECEIVEACK = 12;
     READACK = 13;
+    SYNCCHATS = 14;
     SHUTDOWN = 99;
 }
 
@@ -134,6 +145,7 @@ message Payload {
         ChatOut chat_out = 11;
         Messages messages = 12;
         Ack ack = 13;
+        SyncChats sync_chats = 14;
         Shutdown shutdown = 99;
     }
 }

@@ -34,6 +34,7 @@ service Chat {
   rpc GetMessages(Request) returns (ResponseWithError) {}
   rpc ReceiveAck(Request) returns (ResponseWithError) {}
   rpc ReadAck(Request) returns (ResponseWithError) {}
+  rpc SyncChats(Request) returns (ResponseWithError) {}
 }
 
 service ChatRoute {
