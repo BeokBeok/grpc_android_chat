@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.chatIn(request) }
-                println("cid is ${result.await().resp.cid}")
+                println("${result.await().resp}")
             }
         }
     }
@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.chatOut(request) }
-                println("cid is ${result.await().resp.cid}")
+                println("${result.await().resp}")
             }
         }
     }
@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.sendMessage(request) }
-                println("cid is ${result.await().resp}")
+                println("${result.await()}")
             }
         }
     }
