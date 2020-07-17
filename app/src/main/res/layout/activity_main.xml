@@ -78,4 +78,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_chat_out" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_get_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="get message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_send_message" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

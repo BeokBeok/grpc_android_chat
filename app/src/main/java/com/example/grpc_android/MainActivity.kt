@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         setupChatIn()
         setupChatOut()
         setupSendMessage()
+        setupGetMessage()
     }
 
     /**
@@ -179,6 +180,38 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.sendMessage(request) }
+                println("${result.await()}")
+            }
+        }
+    }
+
+    /**
+     * 채팅방 메시지 조회
+     */
+    private fun setupGetMessage() {
+        btn_get_message.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
+                val paginationModel = Pagination.newBuilder().apply {
+                    pageSize = 30
+                    pageToken = 1
+                }.build()
+
+                val getMessagesModel = Messages.newBuilder().apply {
+                    lastLid = "0"
+                    pagination = paginationModel
+                }.build()
+
+                val payloadModel = Payload.newBuilder().apply {
+                    messages = getMessagesModel
+                }.build()
+
+                val request = Request.newBuilder().apply {
+                    cid = tiet_cid.text.toString()
+                    pldType = PayloadType.GETMESSAGES
+                    payload = payloadModel
+                }.build()
+
+                val result = async { chatBlockingStub.getMessages(request) }
                 println("${result.await()}")
             }
         }
