@@ -6,6 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/tiet_uid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="uid"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/tiet_cid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="cid"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tiet_uid" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/tiet_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tiet_cid" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_event_listen"
         android:layout_width="0dp"
@@ -13,7 +40,7 @@
         android:text="event listen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tiet_message" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_chat_with"
@@ -41,5 +68,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_chat_in" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_send_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="send message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_chat_out" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

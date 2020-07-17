@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         setupChatWith()
         setupChatIn()
         setupChatOut()
+        setupSendMessage()
     }
 
     /**
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
                 val payloadModel = Payload.newBuilder().apply {
                     stream = OpenStream.newBuilder().apply {
-                        name = "yunsu"
+                        name = tiet_uid.text.toString()
                     }.build()
                 }.build()
 
@@ -80,8 +81,8 @@ class MainActivity : AppCompatActivity() {
         btn_chat_with.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
                 val chatWithModel = ChatWith.newBuilder().apply {
-                    name = "yunsu"
-                    peer = name
+                    name = tiet_uid.text.toString()
+                    peer = "test1"
                 }.build()
 
                 val payloadModel = Payload.newBuilder().apply {
@@ -94,7 +95,9 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.chatWith(request) }
-                println("cid is ${result.await().resp.cid}")
+                withContext(Dispatchers.Main) {
+                    tiet_cid.setText(result.await().resp.cid)
+                }
             }
         }
     }
@@ -106,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         btn_chat_in.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
                 val chatInModel = ChatIn.newBuilder().apply {
-                    uid = "yunsu"
+                    uid = tiet_uid.text.toString()
                     chatPublicChecksum = "00000000000000000"
                     chatInChecksum = "00000000000000000"
                 }.build()
@@ -116,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val request = Request.newBuilder().apply {
-                    cid = "1000000005f102077101007"
+                    cid = tiet_cid.text.toString()
                     pldType = PayloadType.CHATIN
                     payload = payloadModel
                 }.build()
@@ -134,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         btn_chat_out.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
                 val chatOutModel = ChatOut.newBuilder().apply {
-                    uid = "yunsu"
+                    uid = tiet_uid.text.toString()
                     lastMsgLid = "0"
                 }.build()
 
@@ -143,13 +146,40 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val request = Request.newBuilder().apply {
-                    cid = "1000000005f102077101007"
+                    cid = tiet_cid.text.toString()
                     pldType = PayloadType.CHATOUT
                     payload = payloadModel
                 }.build()
 
                 val result = async { chatBlockingStub.chatOut(request) }
                 println("cid is ${result.await().resp.cid}")
+            }
+        }
+    }
+
+    /**
+     * 메시지 전송
+     */
+    private fun setupSendMessage() {
+        btn_send_message.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
+                val sendMessageModel = Message.newBuilder().apply {
+                    uid = tiet_uid.text.toString()
+                    message = tiet_message.text.toString()
+                }.build()
+
+                val payloadModel = Payload.newBuilder().apply {
+                    message = sendMessageModel
+                }.build()
+
+                val request = Request.newBuilder().apply {
+                    cid = tiet_cid.text.toString()
+                    pldType = PayloadType.MESSAGE
+                    payload = payloadModel
+                }.build()
+
+                val result = async { chatBlockingStub.sendMessage(request) }
+                println("cid is ${result.await().resp}")
             }
         }
     }
