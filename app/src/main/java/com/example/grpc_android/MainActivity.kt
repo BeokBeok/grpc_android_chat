@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         setupEventListen()
         setupChatWith()
+        setupChatIn()
     }
 
     private fun setupEventListen() {
@@ -81,6 +82,31 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.chatWith(request) }
+                println("cid is ${result.await().resp.cid}")
+            }
+        }
+    }
+
+    private fun setupChatIn() {
+        btn_chat_in.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                val chatInModel = ChatIn.newBuilder().apply {
+                    uid = "yunsu"
+                    chatPublicChecksum = "00000000000000000"
+                    chatInChecksum = "00000000000000000"
+                }.build()
+
+                val payloadModel = Payload.newBuilder().apply {
+                    chatIn = chatInModel
+                }.build()
+
+                val request = Request.newBuilder().apply {
+                    cid = "1000000005f102077101007"
+                    pldType = PayloadType.CHATIN
+                    payload = payloadModel
+                }.build()
+
+                val result = async { chatBlockingStub.chatIn(request) }
                 println("cid is ${result.await().resp.cid}")
             }
         }
