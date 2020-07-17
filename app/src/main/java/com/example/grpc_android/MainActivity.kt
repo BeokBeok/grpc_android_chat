@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity() {
         setupChatIn()
     }
 
+    /**
+     * 채팅 관련 각종 이벤트를 받을 수 있는 리스너 등록
+     */
     private fun setupEventListen() {
         btn_event_listen.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
@@ -64,6 +67,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 채팅방 생성
+     */
     private fun setupChatWith() {
         btn_chat_with.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
@@ -87,6 +93,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 채팅방 진입
+     */
     private fun setupChatIn() {
         btn_chat_in.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
