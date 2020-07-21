@@ -31,6 +31,10 @@ android {
             proto { srcDir './../idl' }
         }
     }
+
+    kotlinOptions {
+        freeCompilerArgs = ["-Xallow-result-return-type"]
+    }
 }
 
 protobuf {
