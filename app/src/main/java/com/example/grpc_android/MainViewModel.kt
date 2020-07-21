@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grpc_android.data.ChatRepository
 import io.grpc.chat.Receive
+import io.grpc.chat.ResponseWithError
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -24,6 +25,9 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
     private val _errMsg = MutableLiveData<String>()
     val errMsg: LiveData<String> get() = _errMsg
 
+    private val _output = MutableLiveData<ResponseWithError>()
+    val output: LiveData<ResponseWithError> get() = _output
+
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
     }
@@ -38,6 +42,16 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
         val result = chatRepository.chatWith(uid, peerName)
         if (result.isSuccess) {
             _cid.value = result.getOrNull()?.resp?.cid
+            _output.value = result.getOrNull()
+        } else {
+            _errMsg.value = result.getOrThrow().error.result
+        }
+    }
+
+    fun chatIn(uid: String, cid: String) = viewModelScope.launch {
+        val result = chatRepository.chatIn(uid, cid)
+        if (result.isSuccess) {
+            _output.value = result.getOrNull()
         } else {
             _errMsg.value = result.getOrThrow().error.result
         }

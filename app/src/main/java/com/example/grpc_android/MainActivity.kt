@@ -52,7 +52,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
         setupEventListen()
         setupChatWith()
-//        setupChatIn()
+        setupChatIn()
 //        setupChatOut()
 //        setupSendMessage()
 //        setupGetMessage()
@@ -82,26 +82,7 @@ class MainActivity : DaggerAppCompatActivity() {
      */
     private fun setupChatIn() {
         btn_chat_in.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
-                val chatInModel = ChatIn.newBuilder().apply {
-                    uid = tiet_uid.text.toString()
-                    chatPublicChecksum = "00000000000000000"
-                    chatInChecksum = "00000000000000000"
-                }.build()
-
-                val payloadModel = Payload.newBuilder().apply {
-                    chatIn = chatInModel
-                }.build()
-
-                val request = Request.newBuilder().apply {
-                    cid = tiet_cid.text.toString()
-                    pldType = PayloadType.CHATIN
-                    payload = payloadModel
-                }.build()
-
-                val result = async { chatBlockingStub.chatIn(request) }
-                println("chatIn is ${result.await().resp}")
-            }
+            viewModel.chatIn(tiet_uid.text.toString(), tiet_cid.text.toString())
         }
     }
 
@@ -200,9 +181,13 @@ class MainActivity : DaggerAppCompatActivity() {
             })
             cid.observe(owner, Observer {
                 println("cid is $it")
+                tiet_cid.setText(it)
             })
             errMsg.observe(owner, Observer {
                 println("err is $it")
+            })
+            output.observe(owner, Observer {
+                println("output is $it")
             })
         }
     }
