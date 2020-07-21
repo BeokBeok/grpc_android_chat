@@ -1,6 +1,7 @@
 package com.example.grpc_android
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -53,7 +54,7 @@ class MainActivity : DaggerAppCompatActivity() {
         setupEventListen()
         setupChatWith()
         setupChatIn()
-//        setupChatOut()
+        setupChatOut()
 //        setupSendMessage()
 //        setupGetMessage()
         setupObserve()
@@ -91,25 +92,7 @@ class MainActivity : DaggerAppCompatActivity() {
      */
     private fun setupChatOut() {
         btn_chat_out.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
-                val chatOutModel = ChatOut.newBuilder().apply {
-                    uid = tiet_uid.text.toString()
-                    lastMsgLid = "0"
-                }.build()
-
-                val payloadModel = Payload.newBuilder().apply {
-                    chatOut = chatOutModel
-                }.build()
-
-                val request = Request.newBuilder().apply {
-                    cid = tiet_cid.text.toString()
-                    pldType = PayloadType.CHATOUT
-                    payload = payloadModel
-                }.build()
-
-                val result = async { chatBlockingStub.chatOut(request) }
-                println("chatOut is ${result.await().resp}")
-            }
+            viewModel.chatOut(tiet_uid.text.toString(), tiet_cid.text.toString())
         }
     }
 

@@ -33,13 +33,13 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
     }
 
     fun eventListen(uid: String) = viewModelScope.launch(coroutineExceptionHandler) {
-        chatRepository.eventListen(uid).flowOn(Dispatchers.IO).collect {
+        chatRepository.eventListen(uid = uid).flowOn(Dispatchers.IO).collect {
             _receive.value = it
         }
     }
 
     fun chatWith(uid: String, peerName: String) = viewModelScope.launch(coroutineExceptionHandler) {
-        val result = chatRepository.chatWith(uid, peerName)
+        val result = chatRepository.chatWith(uid = uid, peerName = peerName)
         if (result.isSuccess) {
             _cid.value = result.getOrNull()?.resp?.cid
             _output.value = result.getOrNull()
@@ -48,8 +48,17 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
         }
     }
 
-    fun chatIn(uid: String, cid: String) = viewModelScope.launch {
-        val result = chatRepository.chatIn(uid, cid)
+    fun chatIn(uid: String, cid: String) = viewModelScope.launch(coroutineExceptionHandler) {
+        val result = chatRepository.chatIn(uid = uid, cid = cid)
+        if (result.isSuccess) {
+            _output.value = result.getOrNull()
+        } else {
+            _errMsg.value = result.getOrThrow().error.result
+        }
+    }
+
+    fun chatOut(uid: String, cid: String) = viewModelScope.launch(coroutineExceptionHandler) {
+        val result = chatRepository.chatOut(uid = uid, cid = cid)
         if (result.isSuccess) {
             _output.value = result.getOrNull()
         } else {
