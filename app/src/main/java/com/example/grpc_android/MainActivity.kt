@@ -1,8 +1,9 @@
 package com.example.grpc_android
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.google.protobuf.Timestamp
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
+import dagger.android.support.DaggerAppCompatActivity
 import io.grpc.ManagedChannel
 import io.grpc.Metadata
 import io.grpc.android.AndroidChannelBuilder
@@ -10,10 +11,15 @@ import io.grpc.chat.*
 import io.grpc.stub.MetadataUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel by viewModels<MainViewModel> { viewModelFactory }
 
     private val chatChannel: ManagedChannel by lazy {
         AndroidChannelBuilder.forAddress("qa-chat.conects.com", 10620)
@@ -44,11 +50,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setupEventListen()
-        setupChatWith()
-        setupChatIn()
-        setupChatOut()
-        setupSendMessage()
-        setupGetMessage()
+//        setupChatWith()
+//        setupChatIn()
+//        setupChatOut()
+//        setupSendMessage()
+//        setupGetMessage()
     }
 
     /**
@@ -56,22 +62,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupEventListen() {
         btn_event_listen.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
-                val payloadModel = Payload.newBuilder().apply {
-                    stream = OpenStream.newBuilder().apply {
-                        name = tiet_uid.text.toString()
-                    }.build()
-                }.build()
-
-                val request = Request.newBuilder().apply {
-                    timestamp = Timestamp.getDefaultInstance()
-                    payload = payloadModel
-                }.build()
-
-                chatBlockingStub.eventListen(request).collect { receive ->
-                    println("$receive")
-                }
-            }
+            viewModel.eventListen(tiet_uid.text.toString())
         }
     }
 
@@ -99,6 +90,7 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     tiet_cid.setText(result.await().resp.cid)
                 }
+                println("chatWith is ${result.await().resp}")
             }
         }
     }
@@ -126,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.chatIn(request) }
-                println("${result.await().resp}")
+                println("chatIn is ${result.await().resp}")
             }
         }
     }
@@ -153,7 +145,7 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.chatOut(request) }
-                println("${result.await().resp}")
+                println("chatOut is ${result.await().resp}")
             }
         }
     }
@@ -180,7 +172,7 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.sendMessage(request) }
-                println("${result.await()}")
+                println("sendMessage is ${result.await()}")
             }
         }
     }
@@ -212,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                 }.build()
 
                 val result = async { chatBlockingStub.getMessages(request) }
-                println("${result.await()}")
+                println("getMessage is ${result.await()}")
             }
         }
     }

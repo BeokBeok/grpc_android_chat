@@ -11,7 +11,6 @@ import io.grpc.stub.MetadataUtils
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -25,13 +24,12 @@ class NetworkModule {
     @Provides
     @Singleton
     fun providesChatChannel(
-        @Named("appContext") applicationContext: Application,
+        applicationContext: Application,
         executor: Executor
-    ): ManagedChannel =
-        AndroidChannelBuilder.forAddress(URL, PORT)
-            .context(applicationContext)
-            .executor(executor)
-            .build()
+    ): ManagedChannel = AndroidChannelBuilder.forAddress(URL, PORT)
+        .context(applicationContext)
+        .executor(executor)
+        .build()
 
     // TODO 동적 Header 설정
     @Provides
