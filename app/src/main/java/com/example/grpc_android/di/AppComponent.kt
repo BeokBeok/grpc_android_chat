@@ -9,7 +9,12 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AndroidSupportInjectionModule::class])
+@Component(
+    modules = [
+        AndroidSupportInjectionModule::class,
+        DataModule::class
+    ]
+)
 interface AppComponent : AndroidInjector<MyApplication> {
 
     @Component.Builder
