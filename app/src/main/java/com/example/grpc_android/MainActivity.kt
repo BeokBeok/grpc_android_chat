@@ -2,6 +2,7 @@ package com.example.grpc_android
 
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import dagger.android.support.DaggerAppCompatActivity
 import io.grpc.ManagedChannel
@@ -50,11 +51,12 @@ class MainActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setupEventListen()
-//        setupChatWith()
+        setupChatWith()
 //        setupChatIn()
 //        setupChatOut()
 //        setupSendMessage()
 //        setupGetMessage()
+        setupObserve()
     }
 
     /**
@@ -71,27 +73,7 @@ class MainActivity : DaggerAppCompatActivity() {
      */
     private fun setupChatWith() {
         btn_chat_with.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
-                val chatWithModel = ChatWith.newBuilder().apply {
-                    name = tiet_uid.text.toString()
-                    peer = "test1"
-                }.build()
-
-                val payloadModel = Payload.newBuilder().apply {
-                    chatWith = chatWithModel
-                }.build()
-
-                val request = Request.newBuilder().apply {
-                    pldType = PayloadType.CHATWITH
-                    payload = payloadModel
-                }.build()
-
-                val result = async { chatBlockingStub.chatWith(request) }
-                withContext(Dispatchers.Main) {
-                    tiet_cid.setText(result.await().resp.cid)
-                }
-                println("chatWith is ${result.await().resp}")
-            }
+            viewModel.chatWith(tiet_uid.text.toString(), "test1")
         }
     }
 
@@ -206,6 +188,22 @@ class MainActivity : DaggerAppCompatActivity() {
                 val result = async { chatBlockingStub.getMessages(request) }
                 println("getMessage is ${result.await()}")
             }
+        }
+    }
+
+    private fun setupObserve() {
+        val owner = this
+
+        viewModel.run {
+            receive.observe(owner, Observer {
+                println("receive it $it")
+            })
+            cid.observe(owner, Observer {
+                println("cid is $it")
+            })
+            errMsg.observe(owner, Observer {
+                println("err is $it")
+            })
         }
     }
 }
