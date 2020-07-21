@@ -29,7 +29,7 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
     val output: LiveData<ResponseWithError> get() = _output
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        throwable.printStackTrace()
+        _errMsg.value = throwable.message
     }
 
     fun eventListen(uid: String) = viewModelScope.launch(coroutineExceptionHandler) {

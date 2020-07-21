@@ -167,7 +167,7 @@ class MainActivity : DaggerAppCompatActivity() {
                 tiet_cid.setText(it)
             })
             errMsg.observe(owner, Observer {
-                println("err is $it")
+                Toast.makeText(owner, it, Toast.LENGTH_SHORT).show()
             })
             output.observe(owner, Observer {
                 println("output is $it")
