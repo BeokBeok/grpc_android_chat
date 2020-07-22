@@ -2,7 +2,6 @@ package com.example.grpc_android.data
 
 import com.google.protobuf.Timestamp
 import io.grpc.chat.*
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,11 +14,6 @@ class ChatDataRepository @Inject constructor(
 ) : ChatRepository {
 
     private val ioDispatcher = Dispatchers.IO
-
-    private val coroutineExceptionHandler =
-        CoroutineExceptionHandler { _, throwable ->
-            throwable.printStackTrace()
-        }
 
     override fun eventListen(uid: String): Flow<Receive> = flow<Receive> {
         val payloadModel = Payload.newBuilder().apply {
@@ -34,10 +28,10 @@ class ChatDataRepository @Inject constructor(
         }.build()
 
         chatRemoteDataSource.eventListen(request)
-    }.flowOn(ioDispatcher + coroutineExceptionHandler)
+    }.flowOn(ioDispatcher)
 
     override suspend fun chatWith(uid: String, peerName: String): Result<ResponseWithError> =
-        withContext(ioDispatcher + coroutineExceptionHandler) {
+        withContext(ioDispatcher) {
             val chatWithModel = ChatWith.newBuilder().apply {
                 name = uid
                 peer = peerName
@@ -60,7 +54,7 @@ class ChatDataRepository @Inject constructor(
         cid: String,
         msg: String
     ): Result<ResponseWithError> =
-        withContext(ioDispatcher + coroutineExceptionHandler) {
+        withContext(ioDispatcher) {
             val sendMessageModel = Message.newBuilder().apply {
                 this.uid = uid
                 message = msg
@@ -80,7 +74,7 @@ class ChatDataRepository @Inject constructor(
         }
 
     override suspend fun chatIn(uid: String, cid: String): Result<ResponseWithError> =
-        withContext(ioDispatcher + coroutineExceptionHandler) {
+        withContext(ioDispatcher) {
             val chatInModel = ChatIn.newBuilder().apply {
                 this.uid = uid
                 chatPublicChecksum = "00000000000000000"
@@ -101,7 +95,7 @@ class ChatDataRepository @Inject constructor(
         }
 
     override suspend fun chatOut(uid: String, cid: String): Result<ResponseWithError> =
-        withContext(ioDispatcher + coroutineExceptionHandler) {
+        withContext(ioDispatcher) {
             val chatOutModel = ChatOut.newBuilder().apply {
                 this.uid = uid
                 lastMsgLid = "0"
@@ -121,7 +115,7 @@ class ChatDataRepository @Inject constructor(
         }
 
     override suspend fun getMessages(cid: String): Result<ResponseWithError> =
-        withContext(ioDispatcher + coroutineExceptionHandler) {
+        withContext(ioDispatcher) {
             val paginationModel = Pagination.newBuilder().apply {
                 pageSize = 30
                 pageToken = 1
@@ -143,5 +137,23 @@ class ChatDataRepository @Inject constructor(
             }.build()
 
             runCatching { chatRemoteDataSource.getMessages(request) }
+        }
+
+    override suspend fun getRooms(uid: String): Result<ResponseWithError> =
+        withContext(ioDispatcher) {
+            val getRoomsModel = Rooms.newBuilder().apply {
+                this.uid = uid
+            }.build()
+
+            val payloadModel = Payload.newBuilder().apply {
+                rooms = getRoomsModel
+            }.build()
+
+            val request = Request.newBuilder().apply {
+                pldType = PayloadType.GETROOMS
+                payload = payloadModel
+            }.build()
+
+            runCatching { chatRemoteDataSource.getRooms(request) }
         }
 }
