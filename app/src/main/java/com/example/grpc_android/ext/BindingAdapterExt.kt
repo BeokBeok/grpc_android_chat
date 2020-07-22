@@ -19,5 +19,6 @@ fun replaceItem(recyclerView: RecyclerView, items: List<Any>?) {
     (recyclerView.adapter as? BaseViewTypeAdapter<Any>)?.run {
         replaceItem(items)
         notifyDataSetChanged()
+        recyclerView.scrollToPosition(items.lastIndex)
     }
 }
