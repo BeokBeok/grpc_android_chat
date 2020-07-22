@@ -9,10 +9,11 @@ import dagger.android.support.DaggerAppCompatActivity
 import io.grpc.ManagedChannel
 import io.grpc.Metadata
 import io.grpc.android.AndroidChannelBuilder
-import io.grpc.chat.*
+import io.grpc.chat.ChatGrpcKt
 import io.grpc.stub.MetadataUtils
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -56,7 +57,7 @@ class MainActivity : DaggerAppCompatActivity() {
         setupChatIn()
         setupChatOut()
         setupSendMessage()
-//        setupGetMessage()
+        setupGetMessage()
         setupObserve()
     }
 
@@ -114,30 +115,7 @@ class MainActivity : DaggerAppCompatActivity() {
      */
     private fun setupGetMessage() {
         btn_get_message.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
-                val paginationModel = Pagination.newBuilder().apply {
-                    pageSize = 30
-                    pageToken = 1
-                }.build()
-
-                val getMessagesModel = Messages.newBuilder().apply {
-                    lastLid = "0"
-                    pagination = paginationModel
-                }.build()
-
-                val payloadModel = Payload.newBuilder().apply {
-                    messages = getMessagesModel
-                }.build()
-
-                val request = Request.newBuilder().apply {
-                    cid = tiet_cid.text.toString()
-                    pldType = PayloadType.GETMESSAGES
-                    payload = payloadModel
-                }.build()
-
-                val result = async { chatBlockingStub.getMessages(request) }
-                println("getMessage is ${result.await()}")
-            }
+            viewModel.getMessages(tiet_cid.text.toString())
         }
     }
 
