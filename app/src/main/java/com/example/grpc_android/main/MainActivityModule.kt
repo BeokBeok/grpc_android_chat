@@ -1,4 +1,4 @@
-package com.example.grpc_android
+package com.example.grpc_android.main
 
 import androidx.lifecycle.ViewModel
 import com.example.grpc_android.di.ViewModelKey

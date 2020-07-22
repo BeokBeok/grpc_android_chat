@@ -1,4 +1,4 @@
-package com.example.grpc_android
+package com.example.grpc_android.main
 
 import android.os.Bundle
 import android.widget.Toast
@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.grpc_android.R
 import com.example.grpc_android.databinding.ActivityMainBinding
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
@@ -26,7 +27,10 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     private fun setupBinding() {
-        binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView<ActivityMainBinding>(
+            this,
+            R.layout.activity_main
+        )
             .apply {
                 lifecycleOwner = this@MainActivity
                 vm = viewModel

@@ -1,7 +1,7 @@
 package com.example.grpc_android.di
 
-import com.example.grpc_android.MainActivity
-import com.example.grpc_android.MainActivityModule
+import com.example.grpc_android.main.MainActivity
+import com.example.grpc_android.main.MainActivityModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

@@ -7,13 +7,13 @@
 
         <variable
             name="vm"
-            type="com.example.grpc_android.MainViewModel" />
+            type="com.example.grpc_android.main.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".main.MainActivity">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiet_uid"
