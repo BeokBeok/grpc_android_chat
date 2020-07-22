@@ -66,4 +66,13 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
         }
     }
 
+    fun sendMessage(uid: String, cid: String, msg: String) =
+        viewModelScope.launch(coroutineExceptionHandler) {
+            val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
+            if (result.isSuccess) {
+                _output.value = result.getOrNull()
+            } else {
+                _errMsg.value = result.getOrThrow().error.result
+            }
+        }
 }

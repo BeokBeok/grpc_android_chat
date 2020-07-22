@@ -55,7 +55,7 @@ class MainActivity : DaggerAppCompatActivity() {
         setupChatWith()
         setupChatIn()
         setupChatOut()
-//        setupSendMessage()
+        setupSendMessage()
 //        setupGetMessage()
         setupObserve()
     }
@@ -101,25 +101,11 @@ class MainActivity : DaggerAppCompatActivity() {
      */
     private fun setupSendMessage() {
         btn_send_message.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch(coroutineExceptionHandler) {
-                val sendMessageModel = Message.newBuilder().apply {
-                    uid = tiet_uid.text.toString()
-                    message = tiet_message.text.toString()
-                }.build()
-
-                val payloadModel = Payload.newBuilder().apply {
-                    message = sendMessageModel
-                }.build()
-
-                val request = Request.newBuilder().apply {
-                    cid = tiet_cid.text.toString()
-                    pldType = PayloadType.MESSAGE
-                    payload = payloadModel
-                }.build()
-
-                val result = async { chatBlockingStub.sendMessage(request) }
-                println("sendMessage is ${result.await()}")
-            }
+            viewModel.sendMessage(
+                tiet_uid.text.toString(),
+                tiet_cid.text.toString(),
+                tiet_message.text.toString()
+            )
         }
     }
 
