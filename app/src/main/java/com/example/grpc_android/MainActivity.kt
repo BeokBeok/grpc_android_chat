@@ -6,15 +6,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import dagger.android.support.DaggerAppCompatActivity
-import io.grpc.ManagedChannel
-import io.grpc.Metadata
-import io.grpc.android.AndroidChannelBuilder
-import io.grpc.chat.ChatGrpcKt
-import io.grpc.stub.MetadataUtils
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.asCoroutineDispatcher
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -23,30 +15,6 @@ class MainActivity : DaggerAppCompatActivity() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private val viewModel by viewModels<MainViewModel> { viewModelFactory }
-
-    private val chatChannel: ManagedChannel by lazy {
-        AndroidChannelBuilder.forAddress("qa-chat.conects.com", 10620)
-            .context(applicationContext)
-            .executor(Executors.newSingleThreadExecutor().asCoroutineDispatcher().executor)
-            .build()
-    }
-
-    private val chatBlockingStub: ChatGrpcKt.ChatCoroutineStub by lazy {
-        MetadataUtils.attachHeaders(
-            ChatGrpcKt.ChatCoroutineStub(chatChannel),
-            Metadata().apply {
-                put(
-                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
-                    "Bearer yunsu"
-                )
-            }
-        )
-    }
-
-    private val coroutineExceptionHandler =
-        CoroutineExceptionHandler { _, throwable ->
-            throwable.printStackTrace()
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
