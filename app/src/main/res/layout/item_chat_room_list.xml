@@ -7,11 +7,16 @@
         <variable
             name="item"
             type="String" />
+
+        <variable
+            name="vm"
+            type="com.example.grpc_android.room.ChatRoomListViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> vm.onClick(item)}">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_chat_room_id"

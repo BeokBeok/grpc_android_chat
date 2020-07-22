@@ -22,7 +22,14 @@ class ChatRoomListViewModel @Inject constructor(private val chatRepository: Chat
         _errMsg.value = throwable.message
     }
 
-    fun getRooms(uid: String) = viewModelScope.launch {
+    private val _roomSelect = MutableLiveData<String>()
+    val roomSelect: LiveData<String> get() = _roomSelect
+
+    fun onClick(cid: String) {
+        _roomSelect.value = cid
+    }
+
+    fun getRooms(uid: String) = viewModelScope.launch(coroutineExceptionHandler) {
         if (uid.isEmpty()) return@launch
 
         val result = chatRepository.getRooms(uid = uid)
