@@ -1,90 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/tiet_uid"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="uid"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/tiet_cid"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="cid"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tiet_uid" />
+        <variable
+            name="vm"
+            type="com.example.grpc_android.MainViewModel" />
+    </data>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/tiet_message"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="message"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tiet_cid" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_event_listen"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="event listen"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tiet_message" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_uid"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="uid"
+            app:layout_constraintEnd_toStartOf="@id/tiet_peer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_chat_with"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="chat with"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_event_listen" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_peer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="peer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tiet_uid"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_chat_in"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="chat in"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_chat_with" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_cid"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="cid"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tiet_uid" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_chat_out"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="chat out"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_chat_in" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tiet_cid" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_send_message"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="send message"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_chat_out" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_event_listen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> vm.eventListen(tietUid.getText().toString())}"
+            android:text="event listen"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tiet_message" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_get_message"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="get message"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_send_message" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_chat_with"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> vm.chatWith(tietUid.getText().toString(), tietPeer.getText().toString())}"
+            android:text="chat with"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_event_listen" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_chat_in"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> vm.chatIn(tietUid.getText().toString(), tietCid.getText().toString())}"
+            android:text="chat in"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_chat_with" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_chat_out"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> vm.chatOut(tietUid.getText().toString(), tietCid.getText().toString())}"
+            android:text="chat out"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_chat_in" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_send_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> vm.sendMessage(tietUid.getText().toString(), tietCid.getText().toString(), tietMessage.getText().toString())}"
+            android:text="send message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_chat_out" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_get_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> vm.getMessages(tietCid.getText().toString())}"
+            android:text="get message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_send_message" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -37,6 +37,9 @@ android {
         freeCompilerArgs = ["-Xallow-result-return-type"]
     }
 
+    buildFeatures {
+        dataBinding = true
+    }
 }
 
 protobuf {
