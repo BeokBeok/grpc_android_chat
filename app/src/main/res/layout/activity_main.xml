@@ -115,7 +115,6 @@
             android:id="@+id/btn_get_rooms"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> vm.getRooms(tietUid.getText().toString())}"
             android:text="get rooms"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

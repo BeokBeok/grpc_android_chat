@@ -84,13 +84,4 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
             _errMsg.value = result.getOrThrow().error.result
         }
     }
-
-    fun getRooms(uid: String) = viewModelScope.launch(coroutineExceptionHandler) {
-        val result = chatRepository.getRooms(uid = uid)
-        if (result.isSuccess) {
-            _output.value = result.getOrNull()
-        } else {
-            _errMsg.value = result.getOrThrow().error.result
-        }
-    }
 }
