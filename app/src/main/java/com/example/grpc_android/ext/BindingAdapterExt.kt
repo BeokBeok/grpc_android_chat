@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grpc_android.base.BaseSingleAdapter
 import com.example.grpc_android.base.BaseViewTypeAdapter
 
-@BindingAdapter("bind:replaceItem")
+@BindingAdapter("bind_replaceItem")
 fun replaceItem(recyclerView: RecyclerView, items: List<Any>?) {
     if (items == null) return
 
