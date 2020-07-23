@@ -4,7 +4,6 @@ import com.google.protobuf.Timestamp
 import io.grpc.chat.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,7 +14,7 @@ class ChatDataRepository @Inject constructor(
 
     private val ioDispatcher = Dispatchers.IO
 
-    override fun eventListen(uid: String): Flow<Receive> = flow<Receive> {
+    override fun eventListen(uid: String): Flow<Receive> {
         val payloadModel = Payload.newBuilder().apply {
             stream = OpenStream.newBuilder().apply {
                 name = uid
@@ -27,8 +26,8 @@ class ChatDataRepository @Inject constructor(
             payload = payloadModel
         }.build()
 
-        chatRemoteDataSource.eventListen(request)
-    }.flowOn(ioDispatcher)
+        return chatRemoteDataSource.eventListen(request).flowOn(ioDispatcher)
+    }
 
     override suspend fun chatWith(uid: String, peerName: String): Result<ResponseWithError> =
         withContext(ioDispatcher) {

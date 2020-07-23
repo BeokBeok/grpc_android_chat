@@ -8,9 +8,7 @@ import com.example.grpc_android.data.ChatRepository
 import io.grpc.chat.Receive
 import io.grpc.chat.ResponseWithError
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,7 +31,7 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
     }
 
     fun eventListen(uid: String) = viewModelScope.launch(coroutineExceptionHandler) {
-        chatRepository.eventListen(uid = uid).flowOn(Dispatchers.IO).collect {
+        chatRepository.eventListen(uid = uid).collect {
             _receive.value = it
         }
     }
