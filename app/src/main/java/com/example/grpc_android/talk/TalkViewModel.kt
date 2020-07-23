@@ -26,18 +26,41 @@ class TalkViewModel @Inject constructor(
     private val _errMsg = MutableLiveData<String>()
     val errMsg: LiveData<String> get() = _errMsg
 
+    private val messages = mutableListOf<MessageData>()
+
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         _errMsg.value = throwable.message
     }
 
-    fun getMessages(cid: String) = viewModelScope.launch(coroutineExceptionHandler) {
+    private lateinit var uid: String
+    private lateinit var cid: String
+
+    fun setupIds(uid: String, cid: String) {
+        this.uid = uid
+        this.cid = cid
+    }
+
+    fun getMessages() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.getMessages(cid = cid)
         if (result.isSuccess) {
-            _messageList.value =
-                result.getOrNull()?.resp?.payload?.messages?.messagesList?.map { it.mapToPresenter() }
-                    ?: emptyList()
+            messages.addAll(result.getOrNull()?.resp?.payload?.messages?.messagesList?.map { it.mapToPresenter() }
+                ?: emptyList())
+            _messageList.value = messages
         } else {
             _errMsg.value = result.getOrThrow().error.result
         }
     }
+
+    fun sendMessage(msg: String) =
+        viewModelScope.launch(coroutineExceptionHandler) {
+            val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
+            if (result.isSuccess) {
+                result.getOrNull()?.resp?.payload?.message?.mapToPresenter()?.let {
+                    messages.add(it)
+                    _messageList.value = messages
+                }
+            } else {
+                _errMsg.value = result.getOrThrow().error.result
+            }
+        }
 }

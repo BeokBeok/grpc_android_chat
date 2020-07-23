@@ -27,7 +27,7 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
     }
 
     private fun showContents() {
-        viewModel.getMessages(intent.extras?.get("cid") as? String ?: "")
+        viewModel.getMessages()
     }
 
     private fun setupRecyclerView() {
@@ -45,7 +45,12 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
     }
 
     override fun setupViewModel() {
-        binding.vm = viewModel
+        binding.vm = viewModel.apply {
+            setupIds(
+                uid = intent.extras?.get("uid") as? String ?: "",
+                cid = intent.extras?.get("cid") as? String ?: ""
+            )
+        }
     }
 
     override fun setupObserve() {
