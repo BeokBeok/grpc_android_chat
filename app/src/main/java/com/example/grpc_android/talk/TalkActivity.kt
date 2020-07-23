@@ -62,6 +62,9 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
             receive.observe(owner, Observer {
                 println("receive $it")
             })
+            successSendMessage.observe(owner, Observer {
+                binding.etInputMessage.text.clear()
+            })
         }
     }
 

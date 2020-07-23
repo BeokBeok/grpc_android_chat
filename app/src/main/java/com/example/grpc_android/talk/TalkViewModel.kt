@@ -32,6 +32,9 @@ class TalkViewModel @Inject constructor(
         _errMsg.value = throwable.message
     }
 
+    private val _successSendMessage = MutableLiveData<Boolean>()
+    val successSendMessage: LiveData<Boolean> get() = _successSendMessage
+
     private lateinit var uid: String
     private lateinit var cid: String
 
@@ -59,6 +62,7 @@ class TalkViewModel @Inject constructor(
                     messages.add(it)
                     _messageList.value = messages
                 }
+                _successSendMessage.value = true
             } else {
                 _errMsg.value = result.getOrThrow().error.message
             }
