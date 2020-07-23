@@ -60,7 +60,7 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
                 Toast.makeText(owner, it, Toast.LENGTH_SHORT).show()
             })
             receive.observe(owner, Observer {
-                println("receive $it")
+                updateMessage(it)
             })
             successSendMessage.observe(owner, Observer {
                 binding.etInputMessage.text.clear()

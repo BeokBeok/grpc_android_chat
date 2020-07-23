@@ -8,6 +8,7 @@ import com.example.grpc_android.data.ChatRepository
 import com.example.grpc_android.talk.model.MessageData
 import com.example.grpc_android.talk.model.mapToPresenter
 import com.example.grpc_android.util.ChatEventReceiver
+import io.grpc.chat.EventType
 import io.grpc.chat.Receive
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
@@ -67,4 +68,11 @@ class TalkViewModel @Inject constructor(
                 _errMsg.value = result.getOrThrow().error.message
             }
         }
+
+    fun updateMessage(receive: Receive) = viewModelScope.launch(coroutineExceptionHandler) {
+        if (receive.eventTypeValue == EventType.MESSAGE_VALUE) {
+            messages.add(receive.event.message.mapToPresenter())
+            _messageList.value = messages
+        }
+    }
 }
