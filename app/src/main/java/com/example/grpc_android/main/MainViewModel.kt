@@ -5,17 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grpc_android.data.ChatRepository
+import com.example.grpc_android.util.ChatEventReceiver
 import io.grpc.chat.Receive
 import io.grpc.chat.ResponseWithError
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(private val chatRepository: ChatRepository) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val chatEventReceiver: ChatEventReceiver,
+    private val chatRepository: ChatRepository
+) : ViewModel() {
 
-    private val _receive = MutableLiveData<Receive>()
-    val receive: LiveData<Receive> get() = _receive
+    val receive: LiveData<Receive> = chatEventReceiver.receive
 
     private val _cid = MutableLiveData<String>()
     val cid: LiveData<String> get() = _cid
@@ -31,9 +33,7 @@ class MainViewModel @Inject constructor(private val chatRepository: ChatReposito
     }
 
     fun eventListen(uid: String) = viewModelScope.launch(coroutineExceptionHandler) {
-        chatRepository.eventListen(uid = uid).collect {
-            _receive.value = it
-        }
+        chatEventReceiver.eventListen(uid = uid)
     }
 
     fun chatWith(uid: String, peerName: String) = viewModelScope.launch(coroutineExceptionHandler) {

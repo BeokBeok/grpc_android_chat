@@ -9,7 +9,7 @@ import com.example.grpc_android.talk.TalkModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
-@Module
+@Module(includes = [ViewModelFactoryComponent::class])
 abstract class ActivityBuilder {
 
     @ContributesAndroidInjector(modules = [MainActivityModule::class])
