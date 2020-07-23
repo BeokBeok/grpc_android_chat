@@ -1,8 +1,10 @@
 package com.example.grpc_android.talk
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.databinding.library.baseAdapters.BR
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.grpc_android.R
 import com.example.grpc_android.base.BaseActivity
@@ -44,6 +46,18 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
 
     override fun setupViewModel() {
         binding.vm = viewModel
+    }
+
+    override fun setupObserve() {
+        val owner = this
+        viewModel.run {
+            errMsg.observe(owner, Observer {
+                Toast.makeText(owner, it, Toast.LENGTH_SHORT).show()
+            })
+            receive.observe(owner, Observer {
+                println("receive $it")
+            })
+        }
     }
 
     enum class TalkViewHolderType(

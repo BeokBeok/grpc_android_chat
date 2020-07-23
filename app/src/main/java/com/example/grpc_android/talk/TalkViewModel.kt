@@ -7,11 +7,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.grpc_android.data.ChatRepository
 import com.example.grpc_android.talk.model.MessageData
 import com.example.grpc_android.talk.model.mapToPresenter
+import com.example.grpc_android.util.ChatEventReceiver
+import io.grpc.chat.Receive
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TalkViewModel @Inject constructor(private val chatRepository: ChatRepository) : ViewModel() {
+class TalkViewModel @Inject constructor(
+    chatEventReceiver: ChatEventReceiver,
+    private val chatRepository: ChatRepository
+) : ViewModel() {
+
+    val receive: LiveData<Receive> = chatEventReceiver.receive
 
     private val _messageList = MutableLiveData<List<MessageData>>()
     val messageList: LiveData<List<MessageData>> get() = _messageList

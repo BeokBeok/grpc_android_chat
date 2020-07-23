@@ -48,13 +48,19 @@ class ChatRoomListActivity : BaseActivity<ActivityChatRoomListBinding>(
     }
 
     override fun setupObserve() {
-        viewModel.roomSelect.observe(this, Observer {
-            startActivity<TalkActivity>(
-                bundleOf(
-                    "uid" to uid,
-                    "cid" to it
+        val owner = this
+        viewModel.run {
+            roomSelect.observe(owner, Observer {
+                startActivity<TalkActivity>(
+                    bundleOf(
+                        "uid" to uid,
+                        "cid" to it
+                    )
                 )
-            )
-        })
+            })
+            receive.observe(owner, Observer {
+                println("receive $it")
+            })
+        }
     }
 }

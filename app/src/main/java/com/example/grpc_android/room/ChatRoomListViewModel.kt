@@ -5,12 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grpc_android.data.ChatRepository
+import com.example.grpc_android.util.ChatEventReceiver
+import io.grpc.chat.Receive
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ChatRoomListViewModel @Inject constructor(private val chatRepository: ChatRepository) :
-    ViewModel() {
+class ChatRoomListViewModel @Inject constructor(
+    chatEventReceiver: ChatEventReceiver,
+    private val chatRepository: ChatRepository
+) : ViewModel() {
+
+    val receive: LiveData<Receive> = chatEventReceiver.receive
 
     private val _roomList = MutableLiveData<List<String>>()
     val roomList: LiveData<List<String>> get() = _roomList
