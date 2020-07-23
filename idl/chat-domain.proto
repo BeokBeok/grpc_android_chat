@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-option go_package = "idl/model";
+option go_package = ".;model";
 option java_multiple_files = true;
 option java_package = "io.grpc.chat";
 option java_outer_classname = "ChatDomain";
@@ -22,72 +22,13 @@ option java_outer_classname = "ChatDomain";
 package model;
 
 import "google/protobuf/timestamp.proto";
+import "event-domain.proto";
 
-message OpenStream {
-    string name = 1;
-}
-message ChatWith {
-    string name = 1;
-    string peer = 2;
-}
-message Invite {
-    string name = 1;
-}
-
-message Join {
-    string name = 1;
-}
-message Leave {
-    string name = 1;
-}
-message Kick {
-    string name = 1;
-}
-message Message {
+// common data
+message Meta {
+    string cid = 1;
     string uid = 2;
-    string tid = 3;
-    string lid = 4; // optional for response
-    string message = 5;
-}
-
-message Users {
-    repeated string users = 2;
-    Pagination pagination = 3;
-}
-
-message Rooms {
-    string uid = 1;
-    repeated string cids = 2;
-    Pagination pagination = 3;
-}
-
-message ReadInfo {
-    string uid = 1;
-    string read_msg_lid = 2;
-}
-
-message ChatIn {
-    string uid = 2;
-    string chat_in_checksum = 3;
-    string chat_public_checksum = 4;
-    repeated string active_uids = 5;
-    repeated ReadInfo read_infos = 6;
-}
-
-message ChatOut {
-    string uid = 2;
-    string last_msg_lid = 3;
-    string read_msg_lid = 4;
-    string sync_chat_checksum = 5;
-}
-
-message Shutdown {
-}
-
-message Messages {
-    repeated Message messages = 2;
-    Pagination pagination = 3;
-    string last_lid = 4;
+    google.protobuf.Timestamp timestamp = 3;
 }
 
 message Pagination {
@@ -96,82 +37,168 @@ message Pagination {
     int32 next_page_token = 3;
 }
 
-message Ack {
+message Error {
+    string code = 1;
+    string message = 2;
+}
+
+// EventListen ...
+message EventListenRequest {
+    Meta meta = 1;
+}
+
+// Create ...
+message CreateRequest {
+    Meta meta = 1;
+    string peer = 2;
+}
+
+message CreateResponse{
+    string cid = 1;
+    Error error = 2;
+}
+
+// Write ...
+message WriteRequest {
+    Meta meta = 1;
+    string tid = 2;
+    string message = 3;
+}
+
+message WriteResponse {
+    Message message = 1;
+    Error error = 2;
+}
+
+// GetUsers ...
+message GetUsersRequest {
+    Meta meta = 1;
+    Pagination pagination = 2;
+}
+
+message GetUsersResponse {
+    repeated string uids = 1;
+    Pagination pagination = 2;
+    Error error = 3;
+}
+
+// GetRooms ... 
+message GetRoomsRequest {
+    Meta meta = 1;
+    Pagination pagination = 2;
+}
+
+message GetRoomsResponse {
+    repeated string cids = 1;
+    Pagination pagination = 2;
+    Error error = 3;
+}
+
+// ChatIn ...
+message ReadInfo {
     string uid = 1;
+    string read_msg_lid = 2;
+}
+
+message ChatInRequest {
+    Meta meta = 1;
+    string chat_in_checksum = 2;
+    string chat_public_checksum = 3;
+}
+
+message ChatInResponse {
+    string cid = 1;
+    repeated string active_uids = 2;
+    repeated ReadInfo read_infos = 3;
+    string chat_in_checksum = 4;
+    string chat_public_checksum = 5;
+    Error error = 6;
+}
+
+// ChatOut ...
+message ChatOutRequest {
+    Meta meta = 1;
+    string last_msg_lid = 2;
+}
+
+message ChatOutResponse {
+    string cid = 1;
+    string read_msg_lid = 2;
+    string sync_chat_checksum = 3;
+    Error error = 4;
+}
+
+// GetMessages ...
+message GetMessagesRequest {
+    Meta meta = 1;
+    string last_lid = 2;
+    Pagination pagination = 3;
+}
+
+message GetMessagesResponse {
+    repeated Message messages = 1;
+    Pagination pagination = 2;
+    Error error = 3;
+}
+
+// ReceiveAck ...
+message ReceiveAckRequest {
+    Meta meta = 1;
     string lid = 2;
 }
 
-message SyncChats {
-    string uid = 2;
-    string last_cid = 3;
+message ReceiveAckResponse {
+    bool ok = 1;
+    Error error = 2;
+}
+
+// ReadAck ...
+message ReadAckRequest {
+    Meta meta = 1;
+    string lid = 2;
+}
+
+message ReadAckResponse {
+    bool ok = 1;
+    Error error = 2;
+}
+
+// SyncChats ...
+message SyncChatsRequest {
+    Meta meta = 1;
+    string last_cid = 2;
     int32 fetch_count = 4;
     string sync_chat_checksum = 5;
-    repeated string del_cids = 6;
-    repeated string upd_cids = 7;
-    bool eof = 8;
 }
 
-enum PayloadType {
-    OPENSTREAM = 0;
-    CHATWITH = 1;
-    INVITE = 2;
-    JOIN = 3;
-    LEAVE = 4;
-    KICK = 5;
-    MESSAGE = 6;
-    GETUSERS = 7;
-    GETROOMS = 8;
-    CHATIN = 9;
-    CHATOUT = 10;
-    GETMESSAGES = 11;
-    RECEIVEACK = 12;
-    READACK = 13;
-    SYNCCHATS = 14;
-    SHUTDOWN = 99;
+message SyncChatsResponse {
+    repeated string del_cids = 1;
+    repeated string upd_cids = 2;
+    bool eof = 3;
+    string sync_chat_checksum = 4;
+    string last_cid = 5;
+    Error error = 6;
 }
 
-message Payload {
-    oneof payload {
-        OpenStream stream = 1;
-        ChatWith chat_with = 2; // 1:1 Chat
-        Invite invite = 3; // Group Chat
-        Join join = 4; // Open Chat
-        Leave leave = 5; // 1:1 or Group Chat
-        Kick kick = 6; // Open Chat
-        Message message = 7; // Message
-        Users  users = 8;
-        Rooms rooms = 9;
-        ChatIn chat_in = 10;
-        ChatOut chat_out = 11;
-        Messages messages = 12;
-        Ack ack = 13;
-        SyncChats sync_chats = 14;
-        Shutdown shutdown = 99;
-    }
+// SyncLogs ...
+message SyncLogsRequest {
+    Meta meta = 1;
+    repeated string lid_ranges = 2;
+    int32 fetch_count = 3;
+    string last_lid = 4;
 }
 
-message Request {
-    google.protobuf.Timestamp timestamp = 1;
-    PayloadType pldType = 2;
-    Payload payload = 3;
-    string cid = 4;
+message SyncLogsResponse {
+    string cid = 1;
+    bool eof = 2;
+    repeated Message messages = 3;
+    string last_sync_lid = 4;
+    string read_msg_lid = 5;
+    string sync_chat_checksum = 6;
+    Error error = 7;
 }
 
-message Response {
-    google.protobuf.Timestamp timestamp = 1;
-    PayloadType pldType = 2;
-    Payload payload = 3;
-    string cid = 4;
-}
-
-message Receive {
-    google.protobuf.Timestamp timestamp = 1;
-    PayloadType pldType = 2;
-    Payload payload = 3;
-    string cid = 4;
-    string senderUid = 5;
-}
-
+// Delivery ...
 message DeliveryRequest {
     Receive recv = 1;
     repeated string uids = 2;
@@ -179,4 +206,5 @@ message DeliveryRequest {
 
 message DeliveryResponse {
     repeated string not_found = 1;
+    Error error = 2;
 }

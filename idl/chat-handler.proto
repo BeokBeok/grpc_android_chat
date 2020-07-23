@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-option go_package = "idl/model";
+option go_package = ".;model";
 option java_multiple_files = true;
 option java_package = "io.grpc.chat";
 option java_outer_classname = "ChatHandler";
@@ -22,37 +22,111 @@ option java_outer_classname = "ChatHandler";
 package model;
 
 import "chat-domain.proto";
+import "event-domain.proto";
+import "google/api/annotations.proto";
+import "annotations.proto";
+
+// These annotations are used when generating the OpenAPI file.
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    title: "Chat API";
+    version: "1.0";
+    description: "gRPC-gateway api";
+    contact: {
+      name: "ST UNITAS"
+      url: "https://conects.com";
+    };
+  };
+  schemes: HTTP;
+  security_definitions: {
+    security: {
+      key: "bearer";
+      value: {
+        type: TYPE_API_KEY;
+        in: IN_HEADER;
+        name: "Authorization";
+        description: "Scheme: Bearer JWT"
+      };
+    };
+  };
+  security: {
+    security_requirement: {
+      key: "bearer";
+    };
+  };
+};
 
 service Chat {
-  rpc EventListen(Request) returns (stream Receive) {}
-  rpc ChatWith(Request) returns (ResponseWithError) {}
-  rpc SendMessage(Request) returns (ResponseWithError) {}
-  rpc GetUsers(Request) returns (ResponseWithError) {}
-  rpc GetRooms(Request) returns (ResponseWithError) {}
-  rpc ChatIn(Request) returns (ResponseWithError) {}
-  rpc ChatOut(Request) returns (ResponseWithError) {}
-  rpc GetMessages(Request) returns (ResponseWithError) {}
-  rpc ReceiveAck(Request) returns (ResponseWithError) {}
-  rpc ReadAck(Request) returns (ResponseWithError) {}
-  rpc SyncChats(Request) returns (ResponseWithError) {}
+  rpc EventListen(EventListenRequest) returns (stream Receive) {
+    option (google.api.http) = {
+      get: "/api/v1/stream"
+    };
+  }
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/chats"
+      body: "*"
+    };
+  }
+  rpc Write(WriteRequest) returns (WriteResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/chats/{meta.cid}/message"
+      body: "*"
+    };
+  }
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/chats/{meta.cid}/users"
+    };
+  }
+  rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/chats"
+    };
+  }
+  rpc ChatIn(ChatInRequest) returns (ChatInResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/chats/{meta.cid}/in"
+      body: "*"
+    };
+  }
+  rpc ChatOut(ChatOutRequest) returns (ChatOutResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/chats/{meta.cid}/out"
+      body: "*"
+    };
+  }
+  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/chats/{meta.cid}/messages"
+    };
+  }
+  rpc ReceiveAck(ReceiveAckRequest) returns (ReceiveAckResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/receiveack"
+      body: "*"
+    };
+  }
+  rpc ReadAck(ReadAckRequest) returns (ReadAckResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/readack"
+      body: "*"
+    };
+  }
+  rpc SyncChats(SyncChatsRequest) returns (SyncChatsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/syncchats"
+      body: "*"
+    };
+  }
+  rpc SyncLogs(SyncLogsRequest) returns (SyncLogsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/chats/{meta.cid}/synclogs"
+      body: "*"
+    };
+  }
 }
 
 service ChatRoute {
-  rpc Delivery(DeliveryRequest) returns (DeliveryResponseWithError) {}
-}
-
-message Error {
-  string code = 1;
-  string result = 2;
-}
-
-// The response message containing the result
-message ResponseWithError{
-  Error error = 1;
-  Response resp = 2;
-}
-
-message DeliveryResponseWithError{
-  Error error = 1;
-  DeliveryResponse resp = 2;
+  rpc Delivery(DeliveryRequest) returns (DeliveryResponse) {}
 }

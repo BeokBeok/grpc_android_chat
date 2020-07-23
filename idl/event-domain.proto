@@ -1,0 +1,76 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option go_package = ".;model";
+option java_multiple_files = true;
+option java_package = "io.grpc.chat";
+option java_outer_classname = "EventDomain";
+
+package model;
+
+import "google/protobuf/timestamp.proto";
+
+message Invite {}
+
+message Join {}
+
+message Leave {}
+
+message Kick {}
+
+message Message {
+  string uid = 1;
+  string tid = 2;
+  string lid = 3;
+  string prev_lid = 4;
+  string message = 5;
+}
+
+message ReadAck {
+  string lid = 1;
+}
+
+message ShutDown {}
+
+enum EventType {
+  INVITE = 0;
+  JOIN = 1;
+  LEAVE = 2;
+  KICK = 3;
+  MESSAGE = 4;
+  READ_ACK = 5;
+  SHUT_DOWN = 99;
+}
+
+message Event {
+  oneof event {
+    Invite invite = 1; // Group Chat
+    Join join = 2; // Open Chat
+    Leave leave = 3; // 1:1 or Group Chat
+    Kick kick = 4; // Open Chat
+    Message message = 5; // Message
+    ReadAck read_ack = 6;
+    ShutDown shut_down = 99;
+  }
+}
+
+message Receive {
+  google.protobuf.Timestamp timestamp = 1;
+  EventType event_type = 2;
+  Event event = 3;
+  string cid = 4;
+  string uid = 5;
+}
