@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.grpc_android.data.ChatRepository
 import com.example.grpc_android.util.ChatEventReceiver
 import io.grpc.chat.Receive
-import io.grpc.chat.ResponseWithError
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,9 +24,6 @@ class MainViewModel @Inject constructor(
     private val _errMsg = MutableLiveData<String>()
     val errMsg: LiveData<String> get() = _errMsg
 
-    private val _output = MutableLiveData<ResponseWithError>()
-    val output: LiveData<ResponseWithError> get() = _output
-
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         _errMsg.value = throwable.message
     }
@@ -39,28 +35,28 @@ class MainViewModel @Inject constructor(
     fun chatWith(uid: String, peerName: String) = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.chatWith(uid = uid, peerName = peerName)
         if (result.isSuccess) {
-            _cid.value = result.getOrNull()?.resp?.cid
-            _output.value = result.getOrNull()
+            _cid.value = result.getOrNull()?.cid
+            println("chatWith is ${result.getOrNull()}")
         } else {
-            _errMsg.value = result.getOrThrow().error.result
+            _errMsg.value = result.getOrThrow().error.message
         }
     }
 
     fun chatIn(uid: String, cid: String) = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.chatIn(uid = uid, cid = cid)
         if (result.isSuccess) {
-            _output.value = result.getOrNull()
+            println("chatIn is ${result.getOrNull()}")
         } else {
-            _errMsg.value = result.getOrThrow().error.result
+            _errMsg.value = result.getOrThrow().error.message
         }
     }
 
     fun chatOut(uid: String, cid: String) = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.chatOut(uid = uid, cid = cid)
         if (result.isSuccess) {
-            _output.value = result.getOrNull()
+            println("chatOut is ${result.getOrNull()}")
         } else {
-            _errMsg.value = result.getOrThrow().error.result
+            _errMsg.value = result.getOrThrow().error.message
         }
     }
 
@@ -68,18 +64,18 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
-                _output.value = result.getOrNull()
+                println("sendMessage is ${result.getOrNull()}")
             } else {
-                _errMsg.value = result.getOrThrow().error.result
+                _errMsg.value = result.getOrThrow().error.message
             }
         }
 
     fun getMessages(cid: String) = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.getMessages(cid = cid)
         if (result.isSuccess) {
-            _output.value = result.getOrNull()
+            println("getMessage is ${result.getOrNull()}")
         } else {
-            _errMsg.value = result.getOrThrow().error.result
+            _errMsg.value = result.getOrThrow().error.message
         }
     }
 }

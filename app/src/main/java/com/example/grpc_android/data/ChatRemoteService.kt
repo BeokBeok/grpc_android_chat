@@ -1,31 +1,29 @@
 package com.example.grpc_android.data
 
-import io.grpc.chat.Receive
-import io.grpc.chat.Request
-import io.grpc.chat.ResponseWithError
+import io.grpc.chat.*
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRemoteService {
 
-    fun eventListen(request: Request): Flow<Receive>
+    fun eventListen(request: EventListenRequest): Flow<Receive>
 
-    suspend fun chatWith(request: Request): ResponseWithError
+    suspend fun chatWith(request: CreateRequest): CreateResponse
 
-    suspend fun sendMessage(request: Request): ResponseWithError
+    suspend fun sendMessage(request: WriteRequest): WriteResponse
 
-    suspend fun getUsers(request: Request): ResponseWithError
+    suspend fun getUsers(request: GetUsersRequest): GetUsersResponse
 
-    suspend fun getRooms(request: Request): ResponseWithError
+    suspend fun getRooms(request: GetRoomsRequest): GetRoomsResponse
 
-    suspend fun chatIn(request: Request): ResponseWithError
+    suspend fun chatIn(request: ChatInRequest): ChatInResponse
 
-    suspend fun chatOut(request: Request): ResponseWithError
+    suspend fun chatOut(request: ChatOutRequest): ChatOutResponse
 
-    suspend fun getMessages(request: Request): ResponseWithError
+    suspend fun getMessages(request: GetMessagesRequest): GetMessagesResponse
 
-    suspend fun receiveAck(request: Request): ResponseWithError
+    suspend fun receiveAck(request: ReceiveAckRequest): ReceiveAckResponse
 
-    suspend fun readAck(request: Request): ResponseWithError
+    suspend fun readAck(request: ReadAckRequest): ReadAckResponse
 
-    suspend fun syncChats(request: Request): ResponseWithError
+    suspend fun syncChats(request: SyncChatsRequest): SyncChatsResponse
 }

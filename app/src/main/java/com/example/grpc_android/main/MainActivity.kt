@@ -45,9 +45,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             errMsg.observe(owner, Observer {
                 Toast.makeText(owner, it, Toast.LENGTH_SHORT).show()
             })
-            output.observe(owner, Observer {
-                println("output is $it")
-            })
         }
     }
 }

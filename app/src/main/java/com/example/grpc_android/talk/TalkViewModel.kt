@@ -43,11 +43,11 @@ class TalkViewModel @Inject constructor(
     fun getMessages() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.getMessages(cid = cid)
         if (result.isSuccess) {
-            messages.addAll(result.getOrNull()?.resp?.payload?.messages?.messagesList?.map { it.mapToPresenter() }
+            messages.addAll(result.getOrNull()?.messagesList?.map { it.mapToPresenter() }
                 ?: emptyList())
             _messageList.value = messages
         } else {
-            _errMsg.value = result.getOrThrow().error.result
+            _errMsg.value = result.getOrThrow().error.message
         }
     }
 
@@ -55,12 +55,12 @@ class TalkViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
-                result.getOrNull()?.resp?.payload?.message?.mapToPresenter()?.let {
+                result.getOrNull()?.message?.mapToPresenter()?.let {
                     messages.add(it)
                     _messageList.value = messages
                 }
             } else {
-                _errMsg.value = result.getOrThrow().error.result
+                _errMsg.value = result.getOrThrow().error.message
             }
         }
 }

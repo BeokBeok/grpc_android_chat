@@ -15,142 +15,90 @@ class ChatDataRepository @Inject constructor(
     private val ioDispatcher = Dispatchers.IO
 
     override fun eventListen(uid: String): Flow<Receive> {
-        val payloadModel = Payload.newBuilder().apply {
-            stream = OpenStream.newBuilder().apply {
-                name = uid
+        val request = EventListenRequest.newBuilder().apply {
+            meta = Meta.newBuilder().apply {
+                this.uid = uid
+                timestamp = Timestamp.getDefaultInstance()
             }.build()
-        }.build()
-
-        val request = Request.newBuilder().apply {
-            timestamp = Timestamp.getDefaultInstance()
-            payload = payloadModel
         }.build()
 
         return chatRemoteDataSource.eventListen(request).flowOn(ioDispatcher)
     }
 
-    override suspend fun chatWith(uid: String, peerName: String): Result<ResponseWithError> =
+    override suspend fun chatWith(uid: String, peerName: String): Result<CreateResponse> =
         withContext(ioDispatcher) {
-            val chatWithModel = ChatWith.newBuilder().apply {
-                name = uid
-                peer = peerName
-            }.build()
-
-            val payloadModel = Payload.newBuilder().apply {
-                chatWith = chatWithModel
-            }.build()
-
-            val request = Request.newBuilder().apply {
-                pldType = PayloadType.CHATWITH
-                payload = payloadModel
+            val request = CreateRequest.newBuilder().apply {
+                meta = Meta.newBuilder().apply {
+                    this.uid = uid
+                    peer = peerName
+                }.build()
             }.build()
 
             runCatching { chatRemoteDataSource.chatWith(request) }
         }
 
-    override suspend fun sendMessage(
-        uid: String,
-        cid: String,
-        msg: String
-    ): Result<ResponseWithError> =
+    override suspend fun sendMessage(uid: String, cid: String, msg: String): Result<WriteResponse> =
         withContext(ioDispatcher) {
-            val sendMessageModel = Message.newBuilder().apply {
-                this.uid = uid
-                message = msg
-            }.build()
-
-            val payloadModel = Payload.newBuilder().apply {
-                message = sendMessageModel
-            }.build()
-
-            val request = Request.newBuilder().apply {
-                this.cid = cid
-                pldType = PayloadType.MESSAGE
-                payload = payloadModel
+            val request = WriteRequest.newBuilder().apply {
+                meta = Meta.newBuilder().apply {
+                    this.uid = uid
+                    this.cid = cid
+                    message = msg
+                }.build()
             }.build()
 
             runCatching { chatRemoteDataSource.sendMessage(request) }
         }
 
-    override suspend fun chatIn(uid: String, cid: String): Result<ResponseWithError> =
+    override suspend fun chatIn(uid: String, cid: String): Result<ChatInResponse> =
         withContext(ioDispatcher) {
-            val chatInModel = ChatIn.newBuilder().apply {
-                this.uid = uid
-                chatPublicChecksum = "00000000000000000"
-                chatInChecksum = "00000000000000000"
-            }.build()
-
-            val payloadModel = Payload.newBuilder().apply {
-                chatIn = chatInModel
-            }.build()
-
-            val request = Request.newBuilder().apply {
-                this.cid = cid
-                pldType = PayloadType.CHATIN
-                payload = payloadModel
+            val request = ChatInRequest.newBuilder().apply {
+                meta = Meta.newBuilder().apply {
+                    this.uid = uid
+                    this.cid = cid
+                    chatPublicChecksum = "00000000000000000"
+                    chatInChecksum = "00000000000000000"
+                }.build()
             }.build()
 
             runCatching { chatRemoteDataSource.chatIn(request) }
         }
 
-    override suspend fun chatOut(uid: String, cid: String): Result<ResponseWithError> =
+    override suspend fun chatOut(uid: String, cid: String): Result<ChatOutResponse> =
         withContext(ioDispatcher) {
-            val chatOutModel = ChatOut.newBuilder().apply {
-                this.uid = uid
-                lastMsgLid = "0"
-            }.build()
-
-            val payloadModel = Payload.newBuilder().apply {
-                chatOut = chatOutModel
-            }.build()
-
-            val request = Request.newBuilder().apply {
-                this.cid = cid
-                pldType = PayloadType.CHATOUT
-                payload = payloadModel
+            val request = ChatOutRequest.newBuilder().apply {
+                meta = Meta.newBuilder().apply {
+                    this.uid = uid
+                    this.cid = cid
+                    lastMsgLid = "0"
+                }.build()
             }.build()
 
             runCatching { chatRemoteDataSource.chatOut(request) }
         }
 
-    override suspend fun getMessages(cid: String): Result<ResponseWithError> =
+    override suspend fun getMessages(cid: String): Result<GetMessagesResponse> =
         withContext(ioDispatcher) {
-            val paginationModel = Pagination.newBuilder().apply {
-                pageSize = 30
-                pageToken = 1
-            }.build()
-
-            val getMessagesModel = Messages.newBuilder().apply {
-                lastLid = "0"
-                pagination = paginationModel
-            }.build()
-
-            val payloadModel = Payload.newBuilder().apply {
-                messages = getMessagesModel
-            }.build()
-
-            val request = Request.newBuilder().apply {
-                this.cid = cid
-                pldType = PayloadType.GETMESSAGES
-                payload = payloadModel
+            val request = GetMessagesRequest.newBuilder().apply {
+                meta = Meta.newBuilder().apply {
+                    lastLid = "0"
+                    this.cid = cid
+                }.build()
+                pagination = Pagination.newBuilder().apply {
+                    pageSize = 30
+                    pageToken = 1
+                }.build()
             }.build()
 
             runCatching { chatRemoteDataSource.getMessages(request) }
         }
 
-    override suspend fun getRooms(uid: String): Result<ResponseWithError> =
+    override suspend fun getRooms(uid: String): Result<GetRoomsResponse> =
         withContext(ioDispatcher) {
-            val getRoomsModel = Rooms.newBuilder().apply {
-                this.uid = uid
-            }.build()
-
-            val payloadModel = Payload.newBuilder().apply {
-                rooms = getRoomsModel
-            }.build()
-
-            val request = Request.newBuilder().apply {
-                pldType = PayloadType.GETROOMS
-                payload = payloadModel
+            val request = GetRoomsRequest.newBuilder().apply {
+                meta = Meta.newBuilder().apply {
+                    this.uid = uid
+                }.build()
             }.build()
 
             runCatching { chatRemoteDataSource.getRooms(request) }

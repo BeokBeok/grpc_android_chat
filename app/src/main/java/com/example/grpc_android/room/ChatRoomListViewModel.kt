@@ -40,9 +40,9 @@ class ChatRoomListViewModel @Inject constructor(
 
         val result = chatRepository.getRooms(uid = uid)
         if (result.isSuccess) {
-            _roomList.value = result.getOrNull()?.resp?.payload?.rooms?.cidsList ?: emptyList()
+            _roomList.value = result.getOrNull()?.cidsList ?: emptyList()
         } else {
-            _errMsg.value = result.getOrThrow().error.result
+            _errMsg.value = result.getOrThrow().error.message
         }
     }
 }
