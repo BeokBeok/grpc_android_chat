@@ -47,8 +47,11 @@ class TalkViewModel @Inject constructor(
     fun getMessages() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.getMessages(cid = cid)
         if (result.isSuccess) {
-            messages.addAll(result.getOrNull()?.messagesList?.map { it.mapToPresenter() }
-                ?: emptyList())
+            result.getOrNull()?.messagesList?.map { it.mapToPresenter() }?.let {
+                messages.add(MessageData(date = it[0].date))
+                messages.addAll(it)
+            }
+            setupHeadline()
             _messageList.value = messages
         } else {
             _errMsg.value = result.getOrThrow().error.message
@@ -73,6 +76,23 @@ class TalkViewModel @Inject constructor(
         if (receive.eventTypeValue == EventType.MESSAGE_VALUE) {
             messages.add(receive.event.message.mapToPresenter())
             _messageList.value = messages
+        }
+    }
+
+    private fun setupHeadline() {
+        val indexToDateList = mutableListOf<Pair<Int, String>>()
+        messages.forEachIndexed { index, messageData ->
+            if (index + 1 > messages.lastIndex) return@forEachIndexed
+            val (currentDate, nextDate) = messageData.date to messages[index + 1].date
+            if (currentDate != nextDate) {
+                indexToDateList.add(Pair(index + 1, nextDate))
+            }
+        }
+        for (i in indexToDateList.indices) {
+            messages.add(
+                indexToDateList[i].first + i,
+                MessageData(date = indexToDateList[i].second)
+            )
         }
     }
 }

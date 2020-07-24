@@ -20,6 +20,8 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel by viewModels<TalkViewModel> { viewModelFactory }
 
+    private val uid: String by lazy { intent.extras?.get("uid") as String }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupRecyclerView()
@@ -33,7 +35,8 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
     private fun setupRecyclerView() {
         val viewHolderMapper: (Any) -> ViewHolderType = {
             when ((it as MessageData).userId) {
-                intent.extras?.get("uid") as? String ?: "" -> TalkViewHolderType.CHAT_MY_MESSAGE
+                "" -> TalkViewHolderType.CHAT_HEADLINE
+                uid -> TalkViewHolderType.CHAT_MY_MESSAGE
                 else -> TalkViewHolderType.CHAT_MESSAGE
             }
         }
@@ -47,7 +50,7 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
     override fun setupViewModel() {
         binding.vm = viewModel.apply {
             setupIds(
-                uid = intent.extras?.get("uid") as? String ?: "",
+                uid = uid,
                 cid = intent.extras?.get("cid") as? String ?: ""
             )
         }
@@ -72,6 +75,7 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
         override val layoutId: Int,
         override val itemBindingId: Int
     ) : ViewHolderType {
+        CHAT_HEADLINE(R.layout.item_talk_headline, BR.item),
         CHAT_MESSAGE(R.layout.item_talk_message, BR.item),
         CHAT_MY_MESSAGE(R.layout.item_talk_my_message, BR.item)
     }

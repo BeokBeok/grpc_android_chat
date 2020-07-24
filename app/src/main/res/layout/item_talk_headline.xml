@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.example.grpc_android.talk.model.MessageData" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <View
+            android:id="@+id/v_talk_headline_before_border"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="@id/tv_talk_headline_title"
+            app:layout_constraintEnd_toStartOf="@id/tv_talk_headline_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_talk_headline_title" />
+
+        <androidx.appcompat.widget.AppCompatCheckedTextView
+            android:id="@+id/tv_talk_headline_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="@{item.date}"
+            app:layout_constraintEnd_toStartOf="@id/v_talk_headline_after_border"
+            app:layout_constraintStart_toEndOf="@id/v_talk_headline_before_border"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2020년 7월 24일 금요일" />
+
+        <View
+            android:id="@+id/v_talk_headline_after_border"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="@id/tv_talk_headline_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_talk_headline_title"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
