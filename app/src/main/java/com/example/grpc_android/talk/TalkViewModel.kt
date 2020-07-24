@@ -51,6 +51,7 @@ class TalkViewModel @Inject constructor(
                 messages.add(MessageData(date = it[0].date))
                 messages.addAll(it)
             }
+            setupProfileAvailable()
             setupHeadline()
             _messageList.value = messages
         } else {
@@ -76,6 +77,16 @@ class TalkViewModel @Inject constructor(
         if (receive.eventTypeValue == EventType.MESSAGE_VALUE) {
             messages.add(receive.event.message.mapToPresenter())
             _messageList.value = messages
+        }
+    }
+
+    private fun setupProfileAvailable() {
+        messages.forEachIndexed { index, messageData ->
+            if (index == 0) return@forEachIndexed
+            if (index + 1 > messages.lastIndex) return@forEachIndexed
+            if (messageData.hourMinute == messages[index + 1].hourMinute) {
+                messages[index + 1].isShowProfile = false
+            }
         }
     }
 
