@@ -13,14 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_chat_bubble_blue" />
+        android:padding="12dp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_talk_message"
@@ -29,9 +22,13 @@
             android:layout_marginStart="6dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/ic_chat_my_background"
-            android:maxWidth="230dp"
-            android:padding="15dp"
+            android:maxWidth="292dp"
+            android:paddingStart="16dp"
+            android:paddingTop="13dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="11dp"
             android:text="@{item.message}"
+            android:textColor="#ffffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="hello world" />
@@ -39,7 +36,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
+            android:layout_marginEnd="5dp"
             android:text="@{item.hourMinute}"
             app:layout_constraintBottom_toBottomOf="@id/tv_talk_message"
             app:layout_constraintEnd_toStartOf="@id/tv_talk_message"

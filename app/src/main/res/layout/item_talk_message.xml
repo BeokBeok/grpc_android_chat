@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:padding="12dp">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_talk_message_profile"
@@ -27,30 +27,26 @@
             android:id="@+id/tv_talk_message_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="8dp"
             android:text="@{item.userId}"
-            app:layout_constraintBottom_toBottomOf="@id/iv_talk_message_profile"
+            android:textColor="#424242"
             app:layout_constraintStart_toEndOf="@id/iv_talk_message_profile"
+            app:layout_constraintTop_toTopOf="@id/iv_talk_message_profile"
             tools:text="강현석" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintStart_toEndOf="@id/iv_talk_message_profile"
-            app:layout_constraintTop_toBottomOf="@id/tv_talk_message_name"
-            app:srcCompat="@drawable/ic_chat_bubble_grey" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_talk_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/ic_chat_background"
-            android:maxWidth="230dp"
-            android:padding="15dp"
+            android:maxWidth="292dp"
+            android:paddingStart="16dp"
+            android:paddingTop="13dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="11dp"
             android:text="@{item.message}"
+            android:textColor="#212121"
             app:layout_constraintStart_toEndOf="@id/iv_talk_message_profile"
             app:layout_constraintTop_toBottomOf="@id/tv_talk_message_name"
             tools:text="hello world" />
@@ -58,7 +54,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="5dp"
             android:text="@{item.hourMinute}"
             app:layout_constraintBottom_toBottomOf="@id/tv_talk_message"
             app:layout_constraintStart_toEndOf="@id/tv_talk_message"
