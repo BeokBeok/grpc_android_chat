@@ -16,7 +16,7 @@ interface ChatRepository {
 
     suspend fun chatOut(uid: String, cid: String): Result<ChatOutResponse>
 
-    suspend fun getMessages(cid: String): Result<GetMessagesResponse>
+    suspend fun getMessages(uid: String, cid: String): Result<GetMessagesResponse>
 
     suspend fun getRooms(uid: String): Result<GetRoomsResponse>
 }

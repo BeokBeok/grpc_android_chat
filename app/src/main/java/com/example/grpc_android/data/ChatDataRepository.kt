@@ -77,11 +77,12 @@ class ChatDataRepository @Inject constructor(
             runCatching { chatRemoteDataSource.chatOut(request) }
         }
 
-    override suspend fun getMessages(cid: String): Result<GetMessagesResponse> =
+    override suspend fun getMessages(uid: String, cid: String): Result<GetMessagesResponse> =
         withContext(ioDispatcher) {
             val request = GetMessagesRequest.newBuilder().apply {
                 meta = Meta.newBuilder().apply {
                     lastLid = "0"
+                    this.uid = uid
                     this.cid = cid
                 }.build()
                 pagination = Pagination.newBuilder().apply {

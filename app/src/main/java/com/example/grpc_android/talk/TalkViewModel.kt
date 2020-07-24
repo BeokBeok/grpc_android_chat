@@ -45,7 +45,7 @@ class TalkViewModel @Inject constructor(
     }
 
     fun getMessages() = viewModelScope.launch(coroutineExceptionHandler) {
-        val result = chatRepository.getMessages(cid = cid)
+        val result = chatRepository.getMessages(uid = uid, cid = cid)
         if (result.isSuccess) {
             result.getOrNull()?.messagesList?.map { it.mapToPresenter() }?.let {
                 messages.add(MessageData(date = it[0].date))

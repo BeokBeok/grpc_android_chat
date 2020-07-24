@@ -105,7 +105,7 @@
             android:id="@+id/btn_get_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> vm.getMessages(tietCid.getText().toString())}"
+            android:onClick="@{() -> vm.getMessages(tietUid.getText().toString(), tietCid.getText().toString())}"
             android:text="get message"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

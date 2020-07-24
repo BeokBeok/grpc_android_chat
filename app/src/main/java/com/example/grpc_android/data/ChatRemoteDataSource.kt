@@ -1,6 +1,8 @@
 package com.example.grpc_android.data
 
+import io.grpc.Metadata
 import io.grpc.chat.*
+import io.grpc.stub.MetadataUtils
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -9,35 +11,123 @@ class ChatRemoteDataSource @Inject constructor(
 ) : ChatRemoteService {
 
     override fun eventListen(request: EventListenRequest): Flow<Receive> =
-        chatService.eventListen(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).eventListen(request)
 
     override suspend fun chatWith(request: CreateRequest): CreateResponse =
-        chatService.create(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).create(request)
 
     override suspend fun sendMessage(request: WriteRequest): WriteResponse =
-        chatService.write(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).write(request)
 
     override suspend fun getUsers(request: GetUsersRequest): GetUsersResponse =
-        chatService.getUsers(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).getUsers(request)
 
     override suspend fun getRooms(request: GetRoomsRequest): GetRoomsResponse =
-        chatService.getRooms(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).getRooms(request)
 
     override suspend fun chatIn(request: ChatInRequest): ChatInResponse =
-        chatService.chatIn(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).chatIn(request)
 
     override suspend fun chatOut(request: ChatOutRequest): ChatOutResponse =
-        chatService.chatOut(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).chatOut(request)
 
     override suspend fun getMessages(request: GetMessagesRequest): GetMessagesResponse =
-        chatService.getMessages(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).getMessages(request)
 
     override suspend fun receiveAck(request: ReceiveAckRequest): ReceiveAckResponse =
-        chatService.receiveAck(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).receiveAck(request)
 
     override suspend fun readAck(request: ReadAckRequest): ReadAckResponse =
-        chatService.readAck(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).readAck(request)
 
     override suspend fun syncChats(request: SyncChatsRequest): SyncChatsResponse =
-        chatService.syncChats(request)
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).syncChats(request)
 }
