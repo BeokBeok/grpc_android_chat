@@ -86,7 +86,7 @@ class ChatDataRepository @Inject constructor(
                     this.cid = cid
                 }.build()
                 pagination = Pagination.newBuilder().apply {
-                    pageSize = 30
+                    pageSize = 1_000
                     pageToken = 1
                 }.build()
             }.build()
