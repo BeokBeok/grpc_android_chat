@@ -75,7 +75,9 @@ class TalkViewModel @Inject constructor(
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
                 val data = result.getOrNull()?.message?.mapToPresenter() ?: return@launch
-                if (messages.last().hourMinute == data.hourMinute) {
+                if (messages.last()
+                        .isEqualUid(data.uid) && messages.last().hourMinute == data.hourMinute
+                ) {
                     messages.last().isShowHourMinute = false
                 }
                 messages.add(data)
@@ -90,10 +92,13 @@ class TalkViewModel @Inject constructor(
         if (receive.eventTypeValue != EventType.MESSAGE_VALUE) return@launch
 
         val receivedMessage = receive.event.message.mapToPresenter()
-        if (messages.last().hourMinute == receivedMessage.hourMinute) {
+        if (messages.last()
+                .isEqualUid(receivedMessage.uid) && messages.last().hourMinute == receivedMessage.hourMinute
+        ) {
             messages.last().isShowHourMinute = false
+            receivedMessage.isShowProfile = false
         }
-        messages.add(receive.event.message.mapToPresenter())
+        messages.add(receivedMessage)
         _messageList.value = messages
     }
 
