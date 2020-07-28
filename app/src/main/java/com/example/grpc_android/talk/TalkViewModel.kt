@@ -47,12 +47,10 @@ class TalkViewModel @Inject constructor(
     fun getMessages() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.getMessages(uid = uid, cid = cid)
         if (result.isSuccess) {
-            val data = result.getOrNull()?.messagesList?.map { it.mapToPresenter() }
-            if (data.isNullOrEmpty()) return@launch
-
+            val data =
+                result.getOrNull()?.messagesList?.map { it.mapToPresenter() } ?: return@launch
+            if (data.isEmpty()) return@launch
             setupMessages(data)
-            setupHeadline()
-            _messageList.value = messages
         } else {
             _errMsg.value = result.getOrThrow().error.message
         }
@@ -62,10 +60,7 @@ class TalkViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
-                val data = result.getOrNull()?.message?.mapToPresenter() ?: return@launch
-                setupProfileAndDateVisibility(current = messages.last(), next = data)
-                messages.add(data)
-                _messageList.value = messages
+                refreshMessage(result.getOrNull()?.message?.mapToPresenter() ?: return@launch)
                 _successSendMessage.value = true
             } else {
                 _errMsg.value = result.getOrThrow().error.message
@@ -74,37 +69,27 @@ class TalkViewModel @Inject constructor(
 
     fun updateMessage(receive: Receive) = viewModelScope.launch(coroutineExceptionHandler) {
         if (receive.eventTypeValue != EventType.MESSAGE_VALUE) return@launch
-
-        val receivedMessage = receive.event.message.mapToPresenter()
-        setupProfileAndDateVisibility(current = messages.last(), next = receivedMessage)
-        messages.add(receivedMessage)
-        _messageList.value = messages
+        refreshMessage(receive.event.message.mapToPresenter())
     }
 
     private fun setupMessages(data: List<MessageData>) {
         messages.add(MessageData(date = data[0].date))
         data.forEachIndexed { index, messageData ->
-            if (index + 1 > data.lastIndex) return@forEachIndexed
-            setupProfileAndDateVisibility(current = messageData, next = data[index + 1])
+            if (index - 1 > 0 && !messageData.isEqualDate(data[index - 1])) {
+                messages.add(MessageData(date = messageData.date))
+            }
+            if (index + 1 < data.lastIndex) {
+                setupProfileAndDateVisibility(current = messageData, next = data[index + 1])
+            }
+            messages.add(messageData)
         }
-        messages.addAll(data)
+        _messageList.value = messages
     }
 
-    private fun setupHeadline() {
-        val indexToDateList = mutableListOf<Pair<Int, String>>()
-        messages.forEachIndexed { index, messageData ->
-            if (index + 1 > messages.lastIndex) return@forEachIndexed
-            val (currentDate, nextDate) = messageData.date to messages[index + 1].date
-            if (currentDate != nextDate) {
-                indexToDateList.add(Pair(index + 1, nextDate))
-            }
-        }
-        for (i in indexToDateList.indices) {
-            messages.add(
-                indexToDateList[i].first + i,
-                MessageData(date = indexToDateList[i].second)
-            )
-        }
+    private fun refreshMessage(message: MessageData) {
+        setupProfileAndDateVisibility(current = messages.last(), next = message)
+        messages.add(message)
+        _messageList.value = messages
     }
 
     private fun setupProfileAndDateVisibility(current: MessageData, next: MessageData) {
