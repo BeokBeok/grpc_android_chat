@@ -23,7 +23,7 @@
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:layout_marginTop="23dp"
-            android:visibility="@{item.showProfile ? View.VISIBLE : View.GONE}"
+            android:visibility="@{item.isShowProfile ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_userprofile_default" />
@@ -35,7 +35,7 @@
             android:layout_marginStart="8dp"
             android:text="@{item.userId}"
             android:textColor="#424242"
-            android:visibility="@{item.showProfile ? View.VISIBLE : View.GONE}"
+            android:visibility="@{item.isShowProfile ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toEndOf="@id/iv_talk_message_profile"
             app:layout_constraintTop_toTopOf="@id/iv_talk_message_profile"
             tools:text="강현석" />
@@ -63,6 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:text="@{item.hourMinute}"
+            android:visibility="@{item.isShowHourMinute ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/tv_talk_message"
             app:layout_constraintStart_toEndOf="@id/tv_talk_message"
             tools:text="오후 4:50" />

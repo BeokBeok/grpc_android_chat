@@ -9,7 +9,8 @@ data class MessageData(
     val message: String = "",
     val transactionId: String = "",
     val userId: String = "",
-    var isShowProfile: Boolean = true
+    var isShowProfile: Boolean = true,
+    var isShowHourMinute: Boolean = true
 )
 
 fun Message.mapToPresenter() = MessageData(

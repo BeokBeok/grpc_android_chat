@@ -61,6 +61,13 @@ class TalkViewModel @Inject constructor(
 
     private fun setupMessages(data: List<MessageData>) {
         messages.add(MessageData(date = data[0].date))
+        data.forEachIndexed { index, messageData ->
+            if (index + 1 > data.lastIndex) return@forEachIndexed
+            if (messageData.hourMinute == data[index + 1].hourMinute) {
+                messageData.isShowHourMinute = false
+            }
+        }
+        data.last().isShowHourMinute = true
         messages.addAll(data)
     }
 
@@ -68,10 +75,12 @@ class TalkViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
-                result.getOrNull()?.message?.mapToPresenter()?.let {
-                    messages.add(it)
-                    _messageList.value = messages
+                val data = result.getOrNull()?.message?.mapToPresenter() ?: return@launch
+                if (messages.last().hourMinute == data.hourMinute) {
+                    messages.last().isShowHourMinute = false
                 }
+                messages.add(data)
+                _messageList.value = messages
                 _successSendMessage.value = true
             } else {
                 _errMsg.value = result.getOrThrow().error.message
@@ -79,10 +88,14 @@ class TalkViewModel @Inject constructor(
         }
 
     fun updateMessage(receive: Receive) = viewModelScope.launch(coroutineExceptionHandler) {
-        if (receive.eventTypeValue == EventType.MESSAGE_VALUE) {
-            messages.add(receive.event.message.mapToPresenter())
-            _messageList.value = messages
+        if (receive.eventTypeValue != EventType.MESSAGE_VALUE) return@launch
+
+        val receivedMessage = receive.event.message.mapToPresenter()
+        if (messages.last().hourMinute == receivedMessage.hourMinute) {
+            messages.last().isShowHourMinute = false
         }
+        messages.add(receive.event.message.mapToPresenter())
+        _messageList.value = messages
     }
 
     private fun setupProfileIfAvailable() {

@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="item"
             type="com.example.grpc_android.talk.model.MessageData" />
@@ -39,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
             android:text="@{item.hourMinute}"
+            android:visibility="@{item.isShowHourMinute ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/tv_talk_message"
             app:layout_constraintEnd_toStartOf="@id/tv_talk_message"
             tools:text="오후 4:57" />
