@@ -63,7 +63,7 @@ class TalkViewModel @Inject constructor(
         messages.add(MessageData(date = data[0].date))
         data.forEachIndexed { index, messageData ->
             if (index + 1 > data.lastIndex) return@forEachIndexed
-            if (messageData.isEqualUid(data[index + 1]) && messageData.hourMinute == data[index + 1].hourMinute) {
+            if (messageData.isEqualUid(data[index + 1]) && messageData.isEqualHourMinute(data[index + 1])) {
                 messageData.isShowHourMinute = false
             }
         }
@@ -75,9 +75,7 @@ class TalkViewModel @Inject constructor(
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
                 val data = result.getOrNull()?.message?.mapToPresenter() ?: return@launch
-                if (messages.last()
-                        .isEqualUid(data) && messages.last().hourMinute == data.hourMinute
-                ) {
+                if (messages.last().isEqualUid(data) && messages.last().isEqualHourMinute(data)) {
                     messages.last().isShowHourMinute = false
                 }
                 messages.add(data)
@@ -92,8 +90,8 @@ class TalkViewModel @Inject constructor(
         if (receive.eventTypeValue != EventType.MESSAGE_VALUE) return@launch
 
         val receivedMessage = receive.event.message.mapToPresenter()
-        if (messages.last()
-                .isEqualUid(receivedMessage) && messages.last().hourMinute == receivedMessage.hourMinute
+        if (messages.last().isEqualUid(receivedMessage) &&
+            messages.last().isEqualHourMinute(receivedMessage)
         ) {
             messages.last().isShowHourMinute = false
             receivedMessage.isShowProfile = false
@@ -106,7 +104,9 @@ class TalkViewModel @Inject constructor(
         messages.forEachIndexed { index, messageData ->
             if (index == 0) return@forEachIndexed
             if (index + 1 > messages.lastIndex) return@forEachIndexed
-            if (messageData.isEqualUid(messages[index + 1]) && messageData.hourMinute == messages[index + 1].hourMinute) {
+            if (messageData.isEqualUid(messages[index + 1]) &&
+                messageData.isEqualHourMinute(messages[index + 1])
+            ) {
                 messages[index + 1].isShowProfile = false
             }
         }
