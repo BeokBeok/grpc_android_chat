@@ -63,11 +63,10 @@ class TalkViewModel @Inject constructor(
         messages.add(MessageData(date = data[0].date))
         data.forEachIndexed { index, messageData ->
             if (index + 1 > data.lastIndex) return@forEachIndexed
-            if (messageData.hourMinute == data[index + 1].hourMinute) {
+            if (messageData.isEqualUid(data[index + 1].uid) && messageData.hourMinute == data[index + 1].hourMinute) {
                 messageData.isShowHourMinute = false
             }
         }
-        data.last().isShowHourMinute = true
         messages.addAll(data)
     }
 
@@ -102,7 +101,7 @@ class TalkViewModel @Inject constructor(
         messages.forEachIndexed { index, messageData ->
             if (index == 0) return@forEachIndexed
             if (index + 1 > messages.lastIndex) return@forEachIndexed
-            if (messageData.hourMinute == messages[index + 1].hourMinute) {
+            if (messageData.isEqualUid(messages[index + 1].uid) && messageData.hourMinute == messages[index + 1].hourMinute) {
                 messages[index + 1].isShowProfile = false
             }
         }
