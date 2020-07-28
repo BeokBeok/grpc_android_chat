@@ -75,11 +75,15 @@ class TalkViewModel @Inject constructor(
     private fun setupMessages(data: List<MessageData>) {
         messages.add(MessageData(date = data[0].date))
         data.forEachIndexed { index, messageData ->
-            if (index - 1 > 0 && !messageData.isEqualDate(data[index - 1])) {
+            if (index - 1 < 0) return@forEachIndexed
+            if (!messageData.isEqualDate(data[index - 1])) {
                 messages.add(MessageData(date = messageData.date))
             }
-            if (index + 1 < data.lastIndex) {
+            if (index < data.lastIndex) {
                 setupProfileAndDateVisibility(current = messageData, next = data[index + 1])
+            } else {
+                data[index - 1].isShowHourMinute = false
+                messageData.isShowProfile = false
             }
             messages.add(messageData)
         }
@@ -87,7 +91,12 @@ class TalkViewModel @Inject constructor(
     }
 
     private fun refreshMessage(message: MessageData) {
-        setupProfileAndDateVisibility(current = messages.last(), next = message)
+        if (messages.isEmpty()) {
+            message.isShowProfile = true
+            message.isShowHourMinute = true
+        } else {
+            setupProfileAndDateVisibility(current = messages.last(), next = message)
+        }
         messages.add(message)
         _messageList.value = messages
     }
