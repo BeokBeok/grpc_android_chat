@@ -14,7 +14,7 @@ data class MessageData(
     var isShowHourMinute: Boolean = true
 ) {
 
-    fun isEqualUid(uid: String): Boolean = this.uid == uid
+    fun isEqualUid(messageData: MessageData): Boolean = uid == messageData.uid
 }
 
 fun Message.mapToPresenter() = MessageData(
