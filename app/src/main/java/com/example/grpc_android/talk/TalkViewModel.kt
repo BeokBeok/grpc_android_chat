@@ -47,16 +47,21 @@ class TalkViewModel @Inject constructor(
     fun getMessages() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.getMessages(uid = uid, cid = cid)
         if (result.isSuccess) {
-            result.getOrNull()?.messagesList?.map { it.mapToPresenter() }?.let {
-                messages.add(MessageData(date = it[0].date))
-                messages.addAll(it)
-            }
-            setupProfileAvailable()
+            val data = result.getOrNull()?.messagesList?.map { it.mapToPresenter() }
+            if (data.isNullOrEmpty()) return@launch
+
+            setupMessages(data)
+            setupProfileIfAvailable()
             setupHeadline()
             _messageList.value = messages
         } else {
             _errMsg.value = result.getOrThrow().error.message
         }
+    }
+
+    private fun setupMessages(data: List<MessageData>) {
+        messages.add(MessageData(date = data[0].date))
+        messages.addAll(data)
     }
 
     fun sendMessage(msg: String) =
@@ -80,7 +85,7 @@ class TalkViewModel @Inject constructor(
         }
     }
 
-    private fun setupProfileAvailable() {
+    private fun setupProfileIfAvailable() {
         messages.forEachIndexed { index, messageData ->
             if (index == 0) return@forEachIndexed
             if (index + 1 > messages.lastIndex) return@forEachIndexed
