@@ -51,7 +51,6 @@ class TalkViewModel @Inject constructor(
             if (data.isNullOrEmpty()) return@launch
 
             setupMessages(data)
-            setupProfileIfAvailable()
             setupHeadline()
             _messageList.value = messages
         } else {
@@ -59,25 +58,12 @@ class TalkViewModel @Inject constructor(
         }
     }
 
-    private fun setupMessages(data: List<MessageData>) {
-        messages.add(MessageData(date = data[0].date))
-        data.forEachIndexed { index, messageData ->
-            if (index + 1 > data.lastIndex) return@forEachIndexed
-            if (messageData.isEqualUid(data[index + 1]) && messageData.isEqualHourMinute(data[index + 1])) {
-                messageData.isShowHourMinute = false
-            }
-        }
-        messages.addAll(data)
-    }
-
     fun sendMessage(msg: String) =
         viewModelScope.launch(coroutineExceptionHandler) {
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
                 val data = result.getOrNull()?.message?.mapToPresenter() ?: return@launch
-                if (messages.last().isEqualUid(data) && messages.last().isEqualHourMinute(data)) {
-                    messages.last().isShowHourMinute = false
-                }
+                setupProfileAndDateVisibility(current = messages.last(), next = data)
                 messages.add(data)
                 _messageList.value = messages
                 _successSendMessage.value = true
@@ -90,26 +76,18 @@ class TalkViewModel @Inject constructor(
         if (receive.eventTypeValue != EventType.MESSAGE_VALUE) return@launch
 
         val receivedMessage = receive.event.message.mapToPresenter()
-        if (messages.last().isEqualUid(receivedMessage) &&
-            messages.last().isEqualHourMinute(receivedMessage)
-        ) {
-            messages.last().isShowHourMinute = false
-            receivedMessage.isShowProfile = false
-        }
+        setupProfileAndDateVisibility(current = messages.last(), next = receivedMessage)
         messages.add(receivedMessage)
         _messageList.value = messages
     }
 
-    private fun setupProfileIfAvailable() {
-        messages.forEachIndexed { index, messageData ->
-            if (index == 0) return@forEachIndexed
-            if (index + 1 > messages.lastIndex) return@forEachIndexed
-            if (messageData.isEqualUid(messages[index + 1]) &&
-                messageData.isEqualHourMinute(messages[index + 1])
-            ) {
-                messages[index + 1].isShowProfile = false
-            }
+    private fun setupMessages(data: List<MessageData>) {
+        messages.add(MessageData(date = data[0].date))
+        data.forEachIndexed { index, messageData ->
+            if (index + 1 > data.lastIndex) return@forEachIndexed
+            setupProfileAndDateVisibility(current = messageData, next = data[index + 1])
         }
+        messages.addAll(data)
     }
 
     private fun setupHeadline() {
@@ -126,6 +104,13 @@ class TalkViewModel @Inject constructor(
                 indexToDateList[i].first + i,
                 MessageData(date = indexToDateList[i].second)
             )
+        }
+    }
+
+    private fun setupProfileAndDateVisibility(current: MessageData, next: MessageData) {
+        if (current.isEqualUid(next) && current.isEqualHourMinute(next)) {
+            current.isShowHourMinute = false
+            next.isShowProfile = false
         }
     }
 }
