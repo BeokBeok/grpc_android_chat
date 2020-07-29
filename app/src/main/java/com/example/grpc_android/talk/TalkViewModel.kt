@@ -91,12 +91,17 @@ class TalkViewModel @Inject constructor(
     }
 
     private fun refreshMessage(message: MessageData) {
+        if (!messages.last().isEqualDate(message)) {
+            messages.add(MessageData(date = message.date))
+        }
+
         if (messages.isEmpty()) {
             message.isShowProfile = true
             message.isShowHourMinute = true
         } else {
             setupProfileAndDateVisibility(current = messages.last(), next = message)
         }
+
         messages.add(message)
         _messageList.value = messages
     }
