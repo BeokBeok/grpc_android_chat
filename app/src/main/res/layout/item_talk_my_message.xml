@@ -18,6 +18,15 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp">
 
+        <View
+            android:id="@+id/v_space"
+            android:layout_width="0dp"
+            android:layout_height="23dp"
+            android:visibility="@{item.isShowProfile ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_talk_message"
             android:layout_width="wrap_content"
@@ -33,7 +42,7 @@
             android:text="@{item.message}"
             android:textColor="#ffffff"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/v_space"
             tools:text="hello world" />
 
         <androidx.appcompat.widget.AppCompatTextView
