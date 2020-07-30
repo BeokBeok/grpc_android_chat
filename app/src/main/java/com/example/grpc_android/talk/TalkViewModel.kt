@@ -60,7 +60,7 @@ class TalkViewModel @Inject constructor(
         viewModelScope.launch(coroutineExceptionHandler) {
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
-                refreshMessage(result.getOrNull()?.message?.mapToPresenter() ?: return@launch)
+                updateMessage(result.getOrNull()?.message?.mapToPresenter() ?: return@launch)
                 _messageList.value = messages
                 _successSendMessage.value = true
             } else {
@@ -68,21 +68,21 @@ class TalkViewModel @Inject constructor(
             }
         }
 
-    fun updateMessage(receive: Receive) = viewModelScope.launch(coroutineExceptionHandler) {
+    fun receiveMessage(receive: Receive) = viewModelScope.launch(coroutineExceptionHandler) {
         if (receive.eventTypeValue != EventType.MESSAGE_VALUE) return@launch
-        refreshMessage(receive.event.message.mapToPresenter())
+        updateMessage(receive.event.message.mapToPresenter())
         _messageList.value = messages
     }
 
     private fun setupMessages(data: List<MessageData>) {
         messages.add(MessageData(date = data[0].date))
         for (element in data) {
-            refreshMessage(element)
+            updateMessage(element)
         }
         _messageList.value = messages
     }
 
-    private fun refreshMessage(message: MessageData) {
+    private fun updateMessage(message: MessageData) {
         if (messages.isEmpty()) {
             message.isShowProfile = true
             message.isShowHourMinute = true
