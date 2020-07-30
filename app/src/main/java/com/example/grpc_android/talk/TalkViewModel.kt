@@ -61,6 +61,7 @@ class TalkViewModel @Inject constructor(
             val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
             if (result.isSuccess) {
                 refreshMessage(result.getOrNull()?.message?.mapToPresenter() ?: return@launch)
+                _messageList.value = messages
                 _successSendMessage.value = true
             } else {
                 _errMsg.value = result.getOrThrow().error.message
@@ -70,40 +71,30 @@ class TalkViewModel @Inject constructor(
     fun updateMessage(receive: Receive) = viewModelScope.launch(coroutineExceptionHandler) {
         if (receive.eventTypeValue != EventType.MESSAGE_VALUE) return@launch
         refreshMessage(receive.event.message.mapToPresenter())
+        _messageList.value = messages
     }
 
     private fun setupMessages(data: List<MessageData>) {
         messages.add(MessageData(date = data[0].date))
-        data.forEachIndexed { index, messageData ->
-            if (index - 1 < 0) return@forEachIndexed
-            if (!messageData.isEqualDate(data[index - 1])) {
-                messages.add(MessageData(date = messageData.date))
-            }
-            if (index < data.lastIndex) {
-                setupProfileAndDateVisibility(current = messageData, next = data[index + 1])
-            } else {
-                data[index - 1].isShowHourMinute = false
-                messageData.isShowProfile = false
-            }
-            messages.add(messageData)
+        for (element in data) {
+            refreshMessage(element)
         }
         _messageList.value = messages
     }
 
     private fun refreshMessage(message: MessageData) {
-        if (!messages.last().isEqualDate(message)) {
-            messages.add(MessageData(date = message.date))
-        }
-
         if (messages.isEmpty()) {
             message.isShowProfile = true
             message.isShowHourMinute = true
-        } else {
-            setupProfileAndDateVisibility(current = messages.last(), next = message)
+            messages.add(message)
+            _messageList.value = messages
+            return
         }
-
+        if (!messages.last().isEqualDate(message)) {
+            messages.add(MessageData(date = message.date))
+        }
+        setupProfileAndDateVisibility(current = messages.last(), next = message)
         messages.add(message)
-        _messageList.value = messages
     }
 
     private fun setupProfileAndDateVisibility(current: MessageData, next: MessageData) {
