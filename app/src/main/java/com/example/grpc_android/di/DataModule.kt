@@ -9,7 +9,7 @@ import dagger.Provides
 import io.grpc.chat.ChatGrpcKt
 import javax.inject.Singleton
 
-@Module(includes = [NetworkModule::class])
+@Module(includes = [DatabaseModule::class, NetworkModule::class])
 class DataModule {
 
     @Provides
