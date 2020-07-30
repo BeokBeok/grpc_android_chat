@@ -1,4 +1,4 @@
-package com.example.grpc_android.data
+package com.example.grpc_android.data.remote
 
 import io.grpc.chat.*
 import kotlinx.coroutines.flow.Flow

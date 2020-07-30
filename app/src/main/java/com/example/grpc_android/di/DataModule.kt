@@ -1,9 +1,9 @@
 package com.example.grpc_android.di
 
 import com.example.grpc_android.data.ChatDataRepository
-import com.example.grpc_android.data.ChatRemoteDataSource
-import com.example.grpc_android.data.ChatRemoteService
 import com.example.grpc_android.data.ChatRepository
+import com.example.grpc_android.data.remote.ChatRemoteDataSource
+import com.example.grpc_android.data.remote.ChatRemoteService
 import dagger.Module
 import dagger.Provides
 import io.grpc.chat.ChatGrpcKt
