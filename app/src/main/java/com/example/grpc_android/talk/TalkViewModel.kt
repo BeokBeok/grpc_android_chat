@@ -75,7 +75,6 @@ class TalkViewModel @Inject constructor(
     }
 
     private fun setupMessages(data: List<MessageData>) {
-        messages.add(MessageData(date = data[0].date))
         for (element in data) {
             updateMessage(element)
         }
