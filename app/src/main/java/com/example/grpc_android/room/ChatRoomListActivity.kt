@@ -22,7 +22,7 @@ class ChatRoomListActivity : BaseActivity<ActivityChatRoomListBinding>(
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel by viewModels<ChatRoomListViewModel> { viewModelFactory }
 
-    private lateinit var uid: String
+    private val uid: String by lazy { intent.extras?.get("uid") as? String ?: "" }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,12 +39,13 @@ class ChatRoomListActivity : BaseActivity<ActivityChatRoomListBinding>(
     }
 
     private fun showContents() {
-        uid = intent.extras?.get("uid") as? String ?: ""
         viewModel.getRooms(uid)
     }
 
     override fun setupViewModel() {
-        binding.vm = viewModel
+        binding.vm = viewModel.apply {
+            setupUid(uid)
+        }
     }
 
     override fun setupObserve() {

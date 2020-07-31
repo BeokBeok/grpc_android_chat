@@ -31,6 +31,12 @@ class ChatRoomListViewModel @Inject constructor(
     private val _roomSelect = MutableLiveData<String>()
     val roomSelect: LiveData<String> get() = _roomSelect
 
+    private lateinit var uid: String
+
+    fun setupUid(uid: String) {
+        this.uid = uid
+    }
+
     fun onClick(cid: String) {
         _roomSelect.value = cid
     }
@@ -40,16 +46,16 @@ class ChatRoomListViewModel @Inject constructor(
 
         val result = chatRepository.getRooms(uid = uid)
         if (result.isSuccess) {
-            _roomList.value = result.getOrNull()?.cidsList ?: emptyList()
+            _roomList.value = result.getOrNull()?.map { it.chatId } ?: emptyList()
         } else {
-            _errMsg.value = result.getOrThrow().error.message
+            _errMsg.value = result.exceptionOrNull()?.message
         }
     }
 
     fun syncChats() = viewModelScope.launch(coroutineExceptionHandler) {
-        val result = chatRepository.syncChats()
+        val result = chatRepository.syncChats(uid)
         if (result.isSuccess) {
-            println("syncChats is ${result.getOrNull()}")
+            _roomList.value = result.getOrNull()?.map { it.chatId } ?: emptyList()
         } else {
             _errMsg.value = result.exceptionOrNull()?.message
         }
