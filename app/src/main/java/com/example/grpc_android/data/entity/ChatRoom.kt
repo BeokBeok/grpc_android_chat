@@ -1,4 +1,4 @@
-package com.example.grpc_android.data.local.entity
+package com.example.grpc_android.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

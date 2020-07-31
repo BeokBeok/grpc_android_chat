@@ -2,7 +2,7 @@ package com.example.grpc_android.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.grpc_android.data.local.entity.ChatRoom
+import com.example.grpc_android.data.entity.ChatRoom
 
 @Database(
     entities = [ChatRoom::class],

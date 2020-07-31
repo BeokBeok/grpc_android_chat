@@ -45,4 +45,13 @@ class ChatRoomListViewModel @Inject constructor(
             _errMsg.value = result.getOrThrow().error.message
         }
     }
+
+    fun syncChats() = viewModelScope.launch(coroutineExceptionHandler) {
+        val result = chatRepository.syncChats()
+        if (result.isSuccess) {
+            println("syncChats is ${result.getOrNull()}")
+        } else {
+            _errMsg.value = result.exceptionOrNull()?.message
+        }
+    }
 }

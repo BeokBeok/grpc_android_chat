@@ -1,11 +1,11 @@
 package com.example.grpc_android.data
 
+import com.example.grpc_android.data.entity.ChatRoom
 import io.grpc.chat.*
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {
 
-    // Remote
     fun eventListen(uid: String): Flow<Receive>
 
     suspend fun chatWith(uid: String, peerName: String): Result<CreateResponse>
@@ -19,4 +19,6 @@ interface ChatRepository {
     suspend fun getMessages(uid: String, cid: String): Result<GetMessagesResponse>
 
     suspend fun getRooms(uid: String): Result<GetRoomsResponse>
+
+    suspend fun syncChats(): Result<List<ChatRoom>>
 }

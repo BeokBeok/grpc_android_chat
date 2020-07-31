@@ -13,16 +13,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_sync_chats"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> vm.syncChats()}"
+            android:text="sync chats"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_chat_room_list_contents"
+            bind_replaceItem="@{vm.roomList}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            bind_replaceItem="@{vm.roomList}" />
+            app:layout_constraintTop_toBottomOf="@id/btn_sync_chats" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

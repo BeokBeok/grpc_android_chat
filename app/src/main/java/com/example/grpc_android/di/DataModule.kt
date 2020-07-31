@@ -27,6 +27,9 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun providesChatDataRepository(chatRemoteDataSource: ChatRemoteDataSource): ChatRepository =
-        ChatDataRepository(chatRemoteDataSource)
+    fun providesChatDataRepository(
+        chatLocalDataSource: ChatLocalDataSource,
+        chatRemoteDataSource: ChatRemoteDataSource
+    ): ChatRepository =
+        ChatDataRepository(chatLocalDataSource, chatRemoteDataSource)
 }
