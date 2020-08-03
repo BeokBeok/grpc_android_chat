@@ -26,4 +26,6 @@ interface ChatRemoteService {
     suspend fun readAck(request: ReadAckRequest): ReadAckResponse
 
     suspend fun syncChats(request: SyncChatsRequest): SyncChatsResponse
+
+    suspend fun syncLogs(request: SyncLogsRequest): SyncLogsResponse
 }

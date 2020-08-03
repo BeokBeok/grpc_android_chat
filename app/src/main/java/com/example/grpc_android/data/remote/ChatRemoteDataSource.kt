@@ -130,4 +130,15 @@ class ChatRemoteDataSource @Inject constructor(
                 )
             }
         ).syncChats(request)
+
+    override suspend fun syncLogs(request: SyncLogsRequest): SyncLogsResponse =
+        MetadataUtils.attachHeaders(
+            chatService,
+            Metadata().apply {
+                put(
+                    Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER),
+                    "Bearer ${request.meta.uid}"
+                )
+            }
+        ).syncLogs(request)
 }
