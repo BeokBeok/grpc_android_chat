@@ -3,6 +3,7 @@ package com.example.grpc_android.data
 import com.example.grpc_android.data.entity.ChatRoom
 import com.example.grpc_android.data.local.ChatLocalDataSource
 import com.example.grpc_android.data.remote.ChatRemoteDataSource
+import com.example.grpc_android.util.Prefs
 import com.google.protobuf.Timestamp
 import io.grpc.chat.*
 import kotlinx.coroutines.Dispatchers
@@ -130,6 +131,8 @@ class ChatDataRepository @Inject constructor(
                         chatLocalDataSource.saveChatRoom(
                             *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
                         )
+                        Prefs.lastCid = fetchedChatRooms.lastCid
+                        Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
                         request = SyncChatsRequest.newBuilder()
                             .setMeta(meta)
                             .setLastCid(fetchedChatRooms.lastCid)
