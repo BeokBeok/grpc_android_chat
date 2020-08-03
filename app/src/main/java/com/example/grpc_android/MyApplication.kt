@@ -16,6 +16,7 @@ class MyApplication : DaggerApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         Security.insertProviderAt(Conscrypt.newProvider(), 1)
         setupFlipper()
     }
@@ -32,5 +33,9 @@ class MyApplication : DaggerApplication() {
                 it.addPlugin(SharedPreferencesFlipperPlugin(this))
             }.start()
         }
+    }
+
+    companion object {
+        lateinit var instance: MyApplication
     }
 }
