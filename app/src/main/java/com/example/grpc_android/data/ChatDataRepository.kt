@@ -112,78 +112,40 @@ class ChatDataRepository @Inject constructor(
 
     override suspend fun syncChats(uid: String): Result<List<ChatRoom>> =
         withContext(ioDispatcher) {
-            runCatching {
-                val cachedChatRooms = chatLocalDataSource.getChatRooms()
-                if (cachedChatRooms.isEmpty()) {
-                    val meta = Meta.newBuilder()
-                        .setUid(uid)
-                        .build()
-                    var request = SyncChatsRequest.newBuilder()
-                        .setMeta(meta)
-                        .setLastCid(Prefs.lastCid)
-                        .setSyncChatChecksum(Prefs.syncChatChecksum)
-                        .setFetchCount(SYNC_CHAT_FETCH_COUNT)
-                        .build()
-                    var fetchedChatRooms = chatRemoteDataSource.syncChats(request)
-                    if (fetchedChatRooms.updCidsCount == 0) return@runCatching emptyList<ChatRoom>()
-
-                    while (!fetchedChatRooms.eof) {
-                        chatLocalDataSource.saveChatRoom(
-                            *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
-                        )
-                        Prefs.lastCid = fetchedChatRooms.lastCid
-                        Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
-                        request = SyncChatsRequest.newBuilder()
-                            .setMeta(meta)
-                            .setLastCid(Prefs.lastCid)
-                            .setSyncChatChecksum(Prefs.syncChatChecksum)
-                            .setFetchCount(SYNC_CHAT_FETCH_COUNT)
-                            .build()
-                        fetchedChatRooms = chatRemoteDataSource.syncChats(request)
-                    }
-                    chatLocalDataSource.saveChatRoom(
-                        *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
-                    )
-                    Prefs.lastCid = fetchedChatRooms.lastCid
-                    Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
-                    return@runCatching chatLocalDataSource.getChatRooms()
-                }
-                val meta = Meta.newBuilder()
-                    .setUid(uid)
-                    .build()
-                var request = SyncChatsRequest.newBuilder()
-                    .setMeta(meta)
-                    .setLastCid(Prefs.lastCid)
-                    .setSyncChatChecksum(Prefs.syncChatChecksum)
-                    .setFetchCount(SYNC_CHAT_FETCH_COUNT)
-                    .build()
-                var fetchedChatRooms = chatRemoteDataSource.syncChats(request)
-                Prefs.lastCid = fetchedChatRooms.lastCid
-                Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
-
-                while (!fetchedChatRooms.eof) {
-                    fetchedChatRooms.delCidsList.map { chatLocalDataSource.deleteChatRoomByCid(it) }
-                    chatLocalDataSource.saveChatRoom(
-                        *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
-                    )
-                    Prefs.lastCid = fetchedChatRooms.lastCid
-                    Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
-                    request = SyncChatsRequest.newBuilder()
-                        .setMeta(meta)
-                        .setLastCid(Prefs.lastCid)
-                        .setSyncChatChecksum(Prefs.syncChatChecksum)
-                        .setFetchCount(SYNC_CHAT_FETCH_COUNT)
-                        .build()
-                    fetchedChatRooms = chatRemoteDataSource.syncChats(request)
-                }
-                fetchedChatRooms.delCidsList.also { if (it.isEmpty()) return@also }
-                    .map { chatLocalDataSource.deleteChatRoomByCid(it) }
-                chatLocalDataSource.saveChatRoom(
-                    *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
-                )
-                return@runCatching chatLocalDataSource.getChatRooms()
-            }
+            runCatching { refreshChatRooms(uid) }
         }
+
+    private suspend fun refreshChatRooms(uid: String): List<ChatRoom> {
+        val meta = Meta.newBuilder().setUid(uid).build()
+        var fetchedChatRooms = fetchChatRooms(meta)
+
+        while (!fetchedChatRooms.eof) {
+            updateChatRooms(fetchedChatRooms)
+            fetchedChatRooms = fetchChatRooms(meta)
+        }
+        updateChatRooms(fetchedChatRooms)
+        return chatLocalDataSource.getChatRooms()
+    }
+
+    private suspend fun fetchChatRooms(meta: Meta?): SyncChatsResponse {
+        val request = SyncChatsRequest.newBuilder()
+            .setMeta(meta)
+            .setLastCid(Prefs.lastCid)
+            .setSyncChatChecksum(Prefs.syncChatChecksum)
+            .setFetchCount(SYNC_CHAT_FETCH_COUNT)
+            .build()
+        return chatRemoteDataSource.syncChats(request)
+    }
+
+    private suspend fun updateChatRooms(fetchedChatRooms: SyncChatsResponse) {
+        fetchedChatRooms.delCidsList.also { if (it.isEmpty()) return@also }
+            .map { chatLocalDataSource.deleteChatRoomByCid(it) }
+        chatLocalDataSource.saveChatRoom(
+            *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
+        )
+        Prefs.lastCid = fetchedChatRooms.lastCid
+        Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
+    }
 
     companion object {
         private const val SYNC_CHAT_FETCH_COUNT = 30
