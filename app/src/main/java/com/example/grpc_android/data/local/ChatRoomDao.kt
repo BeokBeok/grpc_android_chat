@@ -8,7 +8,7 @@ import com.example.grpc_android.data.entity.ChatRoom
 @Dao
 interface ChatRoomDao : BaseDao<ChatRoom> {
 
-    @Query("SELECT * FROM ChatRoom")
+    @Query("SELECT * FROM ChatRoom ORDER BY cid")
     suspend fun get(): List<ChatRoom>
 
     @Query("DELETE FROM ChatRoom WHERE cid = :cid")
