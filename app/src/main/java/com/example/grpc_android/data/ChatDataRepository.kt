@@ -120,8 +120,8 @@ class ChatDataRepository @Inject constructor(
                         .build()
                     var request = SyncChatsRequest.newBuilder()
                         .setMeta(meta)
-                        .setLastCid("0")
-                        .setSyncChatChecksum("0")
+                        .setLastCid(Prefs.lastCid)
+                        .setSyncChatChecksum(Prefs.syncChatChecksum)
                         .setFetchCount(SYNC_CHAT_FETCH_COUNT)
                         .build()
                     var fetchedChatRooms = chatRemoteDataSource.syncChats(request)
@@ -135,8 +135,8 @@ class ChatDataRepository @Inject constructor(
                         Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
                         request = SyncChatsRequest.newBuilder()
                             .setMeta(meta)
-                            .setLastCid(fetchedChatRooms.lastCid)
-                            .setSyncChatChecksum(fetchedChatRooms.syncChatChecksum)
+                            .setLastCid(Prefs.lastCid)
+                            .setSyncChatChecksum(Prefs.syncChatChecksum)
                             .setFetchCount(SYNC_CHAT_FETCH_COUNT)
                             .build()
                         fetchedChatRooms = chatRemoteDataSource.syncChats(request)
@@ -144,9 +144,44 @@ class ChatDataRepository @Inject constructor(
                     chatLocalDataSource.saveChatRoom(
                         *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
                     )
+                    Prefs.lastCid = fetchedChatRooms.lastCid
+                    Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
                     return@runCatching chatLocalDataSource.getChatRooms()
                 }
-                return@runCatching emptyList<ChatRoom>()
+                val meta = Meta.newBuilder()
+                    .setUid(uid)
+                    .build()
+                var request = SyncChatsRequest.newBuilder()
+                    .setMeta(meta)
+                    .setLastCid(Prefs.lastCid)
+                    .setSyncChatChecksum(Prefs.syncChatChecksum)
+                    .setFetchCount(SYNC_CHAT_FETCH_COUNT)
+                    .build()
+                var fetchedChatRooms = chatRemoteDataSource.syncChats(request)
+                Prefs.lastCid = fetchedChatRooms.lastCid
+                Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
+
+                while (!fetchedChatRooms.eof) {
+                    fetchedChatRooms.delCidsList.map { chatLocalDataSource.deleteChatRoomByCid(it) }
+                    chatLocalDataSource.saveChatRoom(
+                        *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
+                    )
+                    Prefs.lastCid = fetchedChatRooms.lastCid
+                    Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
+                    request = SyncChatsRequest.newBuilder()
+                        .setMeta(meta)
+                        .setLastCid(Prefs.lastCid)
+                        .setSyncChatChecksum(Prefs.syncChatChecksum)
+                        .setFetchCount(SYNC_CHAT_FETCH_COUNT)
+                        .build()
+                    fetchedChatRooms = chatRemoteDataSource.syncChats(request)
+                }
+                fetchedChatRooms.delCidsList.also { if (it.isEmpty()) return@also }
+                    .map { chatLocalDataSource.deleteChatRoomByCid(it) }
+                chatLocalDataSource.saveChatRoom(
+                    *fetchedChatRooms.updCidsList.map(::ChatRoom).toTypedArray()
+                )
+                return@runCatching chatLocalDataSource.getChatRooms()
             }
         }
 
