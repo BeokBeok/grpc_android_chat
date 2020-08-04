@@ -198,6 +198,31 @@ message SyncLogsResponse {
     Error error = 7;
 }
 
+// Leave ...
+message  LeaveRequest {
+    Meta meta = 1;
+    bool block = 2;
+}
+
+message LeaveResponse {
+    string cid = 1;
+    string sync_chat_checksum = 2;
+    Message message = 3;
+    Error error = 4;
+}
+
+// Invite 
+message InviteRequest {
+    Meta meta = 1;
+    repeated string peers = 2;
+}
+
+message InviteResponse {
+    Message message = 1;
+    string sync_chat_checksum = 2;
+    Error error = 3;
+}
+
 // Delivery ...
 message DeliveryRequest {
     Receive recv = 1;

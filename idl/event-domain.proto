@@ -23,54 +23,60 @@ package model;
 
 import "google/protobuf/timestamp.proto";
 
-message Invite {}
+message Invite {
+    string sync_chat_checksum = 1;
+    Message message = 2;
+}
 
 message Join {}
 
-message Leave {}
+message Leave {
+    string sync_chat_checksum = 1;
+    Message message = 2;
+}
 
 message Kick {}
 
 message Message {
-  string uid = 1;
-  string tid = 2;
-  string lid = 3;
-  string prev_lid = 4;
-  string message = 5;
+    string uid = 1;
+    string tid = 2;
+    string lid = 3;
+    string prev_lid = 4;
+    string message = 5;
 }
 
 message ReadAck {
-  string lid = 1;
+    string lid = 1;
 }
 
 message ShutDown {}
 
 enum EventType {
-  INVITE = 0;
-  JOIN = 1;
-  LEAVE = 2;
-  KICK = 3;
-  MESSAGE = 4;
-  READ_ACK = 5;
-  SHUT_DOWN = 99;
+    INVITE = 0;
+    JOIN = 1;
+    LEAVE = 2;
+    KICK = 3;
+    MESSAGE = 4;
+    READ_ACK = 5;
+    SHUT_DOWN = 99;
 }
 
 message Event {
-  oneof event {
-    Invite invite = 1; // Group Chat
-    Join join = 2; // Open Chat
-    Leave leave = 3; // 1:1 or Group Chat
-    Kick kick = 4; // Open Chat
-    Message message = 5; // Message
-    ReadAck read_ack = 6;
-    ShutDown shut_down = 99;
-  }
+    oneof event {
+        Invite invite = 1; // Group Chat
+        Join join = 2; // Open Chat
+        Leave leave = 3; // 1:1 or Group Chat
+        Kick kick = 4; // Open Chat
+        Message message = 5; // Message
+        ReadAck read_ack = 6;
+        ShutDown shut_down = 99;
+    }
 }
 
 message Receive {
-  google.protobuf.Timestamp timestamp = 1;
-  EventType event_type = 2;
-  Event event = 3;
-  string cid = 4;
-  string uid = 5;
+    google.protobuf.Timestamp timestamp = 1;
+    EventType event_type = 2;
+    Event event = 3;
+    string cid = 4;
+    string uid = 5;
 }

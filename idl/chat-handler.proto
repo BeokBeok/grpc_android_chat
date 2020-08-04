@@ -125,6 +125,18 @@ service Chat {
       body: "*"
     };
   }
+  rpc Leave(LeaveRequest) returns (LeaveResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/chats/{meta.cid}/leave"
+      body: "*"
+    };
+  }
+  rpc Invite(InviteRequest) returns (InviteResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/chats/{meta.cid}/invite"
+      body: "*"
+    };
+  }
 }
 
 service ChatRoute {
