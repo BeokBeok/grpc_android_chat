@@ -15,6 +15,10 @@ class ChatLocalDataSource @Inject constructor(
         chatRoomDao.insert(*chatRoom)
     }
 
+    override suspend fun updateChatRoom(chatRoom: ChatRoom) = withContext(ioDispatcher) {
+        chatRoomDao.update(chatRoom)
+    }
+
     override suspend fun getChatRooms(): List<ChatRoom> = withContext(ioDispatcher) {
         chatRoomDao.get()
     }

@@ -6,6 +6,8 @@ interface ChatLocalService {
 
     suspend fun saveChatRoom(vararg chatRoom: ChatRoom)
 
+    suspend fun updateChatRoom(chatRoom: ChatRoom)
+
     suspend fun getChatRooms(): List<ChatRoom>
 
     suspend fun deleteChatRoomByCid(cid: String)
