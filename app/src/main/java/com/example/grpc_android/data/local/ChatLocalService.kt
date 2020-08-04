@@ -4,7 +4,7 @@ import com.example.grpc_android.data.entity.ChatRoom
 
 interface ChatLocalService {
 
-    suspend fun saveChatRoom(vararg chatRoom: ChatRoom)
+    suspend fun saveChatRoom(chatRoom: ChatRoom)
 
     suspend fun updateChatRoom(chatRoom: ChatRoom)
 

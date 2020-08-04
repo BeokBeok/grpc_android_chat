@@ -11,8 +11,8 @@ class ChatLocalDataSource @Inject constructor(
 
     private val ioDispatcher = Dispatchers.IO
 
-    override suspend fun saveChatRoom(vararg chatRoom: ChatRoom) = withContext(ioDispatcher) {
-        chatRoomDao.insert(*chatRoom)
+    override suspend fun saveChatRoom(chatRoom: ChatRoom) = withContext(ioDispatcher) {
+        chatRoomDao.insert(chatRoom)
     }
 
     override suspend fun updateChatRoom(chatRoom: ChatRoom) = withContext(ioDispatcher) {
