@@ -137,18 +137,10 @@ class ChatDataRepository @Inject constructor(
         return chatRemoteDataSource.syncChats(request)
     }
 
-    private suspend fun updateChatRooms(fetchedChatRooms: SyncChatsResponse) {
-        fetchedChatRooms.delCidsList
-            .also { if (it.isEmpty()) return@also }
-            .map { chatLocalDataSource.deleteChatRoomByCid(it) }
-        fetchedChatRooms.updCidsList
-            .also { if (it.isEmpty()) return@also }
-            .map(::ChatRoom)
-            .map { chatLocalDataSource.saveChatRoom(it) }
-            .run {
-                Prefs.lastCid = fetchedChatRooms.lastCid
-                Prefs.syncChatChecksum = fetchedChatRooms.syncChatChecksum
-            }
+    private suspend fun updateChatRooms(syncChatsResponse: SyncChatsResponse) {
+        chatLocalDataSource.updateChatRoom(syncChatsResponse)
+        Prefs.lastCid = syncChatsResponse.lastCid
+        Prefs.syncChatChecksum = syncChatsResponse.syncChatChecksum
     }
 
     companion object {
