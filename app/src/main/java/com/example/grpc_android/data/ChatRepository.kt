@@ -21,4 +21,6 @@ interface ChatRepository {
     suspend fun getRooms(uid: String): Result<List<ChatRoom>>
 
     suspend fun syncChats(uid: String): Result<List<ChatRoom>>
+
+    suspend fun syncLogs(uid: String, cid: String): Result<SyncLogsResponse>
 }

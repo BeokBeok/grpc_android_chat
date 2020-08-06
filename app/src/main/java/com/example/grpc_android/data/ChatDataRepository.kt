@@ -116,6 +116,21 @@ class ChatDataRepository @Inject constructor(
             runCatching { refreshChatRooms(uid) }
         }
 
+    override suspend fun syncLogs(uid: String, cid: String): Result<SyncLogsResponse> =
+        withContext(ioDispatcher) {
+            val meta = Meta.newBuilder().setUid(uid).setCid(cid).build()
+            val request = SyncLogsRequest.newBuilder()
+                .setMeta(meta)
+                .setLastLid("0")
+                .setFetchCount(1_000)
+                .addAllLidRanges(emptyList<String>())
+                .build()
+            val syncLogsResponse = chatRemoteDataSource.syncLogs(request)
+            chatLocalDataSource.updateChatMessage(cid, syncLogsResponse)
+
+            runCatching { syncLogsResponse }
+        }
+
     private suspend fun refreshChatRooms(uid: String): List<ChatRoom> {
         val meta = Meta.newBuilder().setUid(uid).build()
         var fetchedChatRooms = fetchChatRooms(meta)

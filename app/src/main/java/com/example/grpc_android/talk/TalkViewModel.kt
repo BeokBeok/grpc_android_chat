@@ -74,6 +74,15 @@ class TalkViewModel @Inject constructor(
         _messageList.value = messages
     }
 
+    fun syncLogs() = viewModelScope.launch(coroutineExceptionHandler) {
+        val result = chatRepository.syncLogs(uid = uid, cid = cid)
+        if (result.isSuccess) {
+            println()
+        } else {
+            println()
+        }
+    }
+
     private fun setupMessages(data: List<MessageVO>) {
         for (element in data) {
             updateMessage(element)
