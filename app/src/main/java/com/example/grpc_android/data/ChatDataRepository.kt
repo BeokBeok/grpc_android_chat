@@ -38,6 +38,7 @@ class ChatDataRepository @Inject constructor(
                 .build()
             val request = CreateRequest.newBuilder()
                 .setMeta(meta)
+                .setPeer(peerName)
                 .build()
 
             runCatching { chatRemoteDataSource.chatWith(request) }
