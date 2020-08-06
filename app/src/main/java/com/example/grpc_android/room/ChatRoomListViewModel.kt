@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grpc_android.data.ChatRepository
+import com.example.grpc_android.room.vo.mapToPresenter
 import com.example.grpc_android.util.ChatEventReceiver
 import io.grpc.chat.Receive
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -46,7 +47,10 @@ class ChatRoomListViewModel @Inject constructor(
 
         val result = chatRepository.getRooms(uid = uid)
         if (result.isSuccess) {
-            _roomList.value = result.getOrNull()?.map { it.chatId } ?: emptyList()
+            _roomList.value =
+                result.getOrNull()
+                    ?.map { it.mapToPresenter() }
+                    ?.map { it.chatId } ?: emptyList()
         } else {
             _errMsg.value = result.exceptionOrNull()?.message
         }
@@ -55,7 +59,9 @@ class ChatRoomListViewModel @Inject constructor(
     fun syncChats() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.syncChats(uid)
         if (result.isSuccess) {
-            _roomList.value = result.getOrNull()?.map { it.chatId } ?: emptyList()
+            _roomList.value = result.getOrNull()
+                ?.map { it.mapToPresenter() }
+                ?.map { it.chatId } ?: emptyList()
         } else {
             _errMsg.value = result.exceptionOrNull()?.message
         }
