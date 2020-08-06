@@ -22,4 +22,8 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun providesChatRoomDao(chatDatabase: ChatDatabase) = chatDatabase.chatRoomDao()
+
+    @Provides
+    @Singleton
+    fun providesChatMessageDao(chatDatabase: ChatDatabase) = chatDatabase.chatMessageDao()
 }
