@@ -34,7 +34,7 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
 
     private fun setupRecyclerView() {
         val viewHolderMapper: (Any) -> ViewHolderType = {
-            when ((it as MessageVO).userId) {
+            when ((it as MessageVO).uid) {
                 "" -> TalkViewHolderType.CHAT_HEADLINE
                 uid -> TalkViewHolderType.CHAT_MY_MESSAGE
                 else -> TalkViewHolderType.CHAT_MESSAGE

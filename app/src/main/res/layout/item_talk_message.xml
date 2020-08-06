@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{item.userId}"
+            android:text="@{item.uid}"
             android:textColor="#424242"
             android:visibility="@{item.isShowProfile ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toEndOf="@id/iv_talk_message_profile"

@@ -9,7 +9,6 @@ data class MessageVO(
     val hourMinute: String = "",
     val message: String = "",
     val transactionId: String = "",
-    val userId: String = "",
     var isShowProfile: Boolean = true,
     var isShowHourMinute: Boolean = true
 ) {
@@ -26,6 +25,5 @@ fun Message.mapToPresenter() = MessageVO(
     date = TimeConverter.lidToYearMonthDay(this.lid),
     hourMinute = TimeConverter.lidToHourMinute(this.lid),
     message = this.message,
-    transactionId = this.tid,
-    userId = this.uid
+    transactionId = this.tid
 )
