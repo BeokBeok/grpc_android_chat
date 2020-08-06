@@ -11,7 +11,7 @@ import com.example.grpc_android.base.BaseActivity
 import com.example.grpc_android.base.BaseViewTypeAdapter
 import com.example.grpc_android.base.ViewHolderType
 import com.example.grpc_android.databinding.ActivityTalkBinding
-import com.example.grpc_android.talk.model.MessageData
+import com.example.grpc_android.talk.vo.MessageVO
 import javax.inject.Inject
 
 class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
@@ -34,13 +34,13 @@ class TalkActivity : BaseActivity<ActivityTalkBinding>(R.layout.activity_talk) {
 
     private fun setupRecyclerView() {
         val viewHolderMapper: (Any) -> ViewHolderType = {
-            when ((it as MessageData).userId) {
+            when ((it as MessageVO).userId) {
                 "" -> TalkViewHolderType.CHAT_HEADLINE
                 uid -> TalkViewHolderType.CHAT_MY_MESSAGE
                 else -> TalkViewHolderType.CHAT_MESSAGE
             }
         }
-        binding.rvTalkContents.adapter = BaseViewTypeAdapter<MessageData>(
+        binding.rvTalkContents.adapter = BaseViewTypeAdapter<MessageVO>(
             viewHolderMapper = viewHolderMapper,
             viewHolderType = TalkViewHolderType::class,
             viewModels = mapOf(BR.vm to viewModel)

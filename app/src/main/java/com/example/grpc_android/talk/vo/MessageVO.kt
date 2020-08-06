@@ -1,9 +1,9 @@
-package com.example.grpc_android.talk.model
+package com.example.grpc_android.talk.vo
 
 import com.example.grpc_android.util.TimeConverter
 import io.grpc.chat.Message
 
-data class MessageData(
+data class MessageVO(
     val uid: String = "",
     val date: String = "",
     val hourMinute: String = "",
@@ -14,14 +14,14 @@ data class MessageData(
     var isShowHourMinute: Boolean = true
 ) {
 
-    fun isEqualUid(messageData: MessageData): Boolean = uid == messageData.uid
+    fun isEqualUid(messageVO: MessageVO): Boolean = uid == messageVO.uid
 
-    fun isEqualHourMinute(messageData: MessageData): Boolean = hourMinute == messageData.hourMinute
+    fun isEqualHourMinute(messageVO: MessageVO): Boolean = hourMinute == messageVO.hourMinute
 
-    fun isEqualDate(messageData: MessageData): Boolean = date == messageData.date
+    fun isEqualDate(messageVO: MessageVO): Boolean = date == messageVO.date
 }
 
-fun Message.mapToPresenter() = MessageData(
+fun Message.mapToPresenter() = MessageVO(
     uid = uid,
     date = TimeConverter.lidToYearMonthDay(this.lid),
     hourMinute = TimeConverter.lidToHourMinute(this.lid),

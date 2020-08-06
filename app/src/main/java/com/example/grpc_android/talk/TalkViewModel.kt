@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grpc_android.data.ChatRepository
-import com.example.grpc_android.talk.model.MessageData
-import com.example.grpc_android.talk.model.mapToPresenter
+import com.example.grpc_android.talk.vo.MessageVO
+import com.example.grpc_android.talk.vo.mapToPresenter
 import com.example.grpc_android.util.ChatEventReceiver
 import io.grpc.chat.EventType
 import io.grpc.chat.Receive
@@ -21,13 +21,13 @@ class TalkViewModel @Inject constructor(
 
     val receive: LiveData<Receive> = chatEventReceiver.receive
 
-    private val _messageList = MutableLiveData<List<MessageData>>()
-    val messageList: LiveData<List<MessageData>> get() = _messageList
+    private val _messageList = MutableLiveData<List<MessageVO>>()
+    val messageList: LiveData<List<MessageVO>> get() = _messageList
 
     private val _errMsg = MutableLiveData<String>()
     val errMsg: LiveData<String> get() = _errMsg
 
-    private val messages = mutableListOf<MessageData>()
+    private val messages = mutableListOf<MessageVO>()
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         _errMsg.value = throwable.message
@@ -74,14 +74,14 @@ class TalkViewModel @Inject constructor(
         _messageList.value = messages
     }
 
-    private fun setupMessages(data: List<MessageData>) {
+    private fun setupMessages(data: List<MessageVO>) {
         for (element in data) {
             updateMessage(element)
         }
         _messageList.value = messages
     }
 
-    private fun updateMessage(message: MessageData) {
+    private fun updateMessage(message: MessageVO) {
         if (messages.isEmpty()) {
             message.isShowProfile = true
             message.isShowHourMinute = true
@@ -90,13 +90,13 @@ class TalkViewModel @Inject constructor(
             return
         }
         if (!messages.last().isEqualDate(message)) {
-            messages.add(MessageData(date = message.date))
+            messages.add(MessageVO(date = message.date))
         }
         setupProfileAndDateVisibility(current = messages.last(), next = message)
         messages.add(message)
     }
 
-    private fun setupProfileAndDateVisibility(current: MessageData, next: MessageData) {
+    private fun setupProfileAndDateVisibility(current: MessageVO, next: MessageVO) {
         if (current.isEqualUid(next) && current.isEqualHourMinute(next)) {
             current.isShowHourMinute = false
             next.isShowProfile = false

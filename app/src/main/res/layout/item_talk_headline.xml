@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.example.grpc_android.talk.model.MessageData" />
+            type="com.example.grpc_android.talk.vo.MessageVO" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
