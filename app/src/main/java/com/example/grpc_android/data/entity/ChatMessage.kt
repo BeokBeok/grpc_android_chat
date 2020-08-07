@@ -20,5 +20,8 @@ data class ChatMessage(
     @PrimaryKey @ColumnInfo(name = "cid") val chatId: String,
 
     @ColumnInfo(name = "messages")
-    val messages: List<String>
+    val messages: List<MessageEntity>,
+
+    @ColumnInfo(name = "lastSyncLid")
+    val lastSyncLid: String
 )
