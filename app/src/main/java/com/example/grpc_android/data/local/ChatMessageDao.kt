@@ -23,7 +23,9 @@ interface ChatMessageDao : BaseDao<ChatMessage> {
         val addedMessages = syncLogsResponse.messagesList
             .map { it.mapToEntity() }
             .also { if (it.isEmpty()) return }
-        val updatedMessages = cachedMessages.toMutableList().apply { addAll(addedMessages) }
+        val updatedMessages = cachedMessages.toMutableList()
+            .apply { addAll(addedMessages) }
+            .sortedBy { it.lid }
 
         if (cachedMessages.isEmpty()) {
             insert(
