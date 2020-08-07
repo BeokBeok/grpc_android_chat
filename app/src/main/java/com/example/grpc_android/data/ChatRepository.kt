@@ -17,11 +17,11 @@ interface ChatRepository {
 
     suspend fun chatOut(uid: String, cid: String): Result<ChatOutResponse>
 
-    suspend fun getMessages(uid: String, cid: String): Result<GetMessagesResponse>
-
     suspend fun getRooms(uid: String): Result<List<ChatRoom>>
 
     suspend fun syncChats(uid: String): Result<List<ChatRoom>>
+
+    suspend fun getMessages(cid: String): Result<ChatMessage>
 
     suspend fun syncLogs(uid: String, cid: String): Result<ChatMessage>
 }

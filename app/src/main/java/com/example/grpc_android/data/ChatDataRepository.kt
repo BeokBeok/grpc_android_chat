@@ -88,25 +88,6 @@ class ChatDataRepository @Inject constructor(
             runCatching { chatRemoteDataSource.chatOut(request) }
         }
 
-    override suspend fun getMessages(uid: String, cid: String): Result<GetMessagesResponse> =
-        withContext(ioDispatcher) {
-            val meta = Meta.newBuilder()
-                .setUid(uid)
-                .setCid(cid)
-                .build()
-            val pagination = Pagination.newBuilder().apply {
-                pageSize = 1_000
-                pageToken = 1
-            }.build()
-            val request = GetMessagesRequest.newBuilder()
-                .setMeta(meta)
-                .setLastLid("0")
-                .setPagination(pagination)
-                .build()
-
-            runCatching { chatRemoteDataSource.getMessages(request) }
-        }
-
     override suspend fun getRooms(uid: String): Result<List<ChatRoom>> =
         withContext(ioDispatcher) {
             runCatching { chatLocalDataSource.getChatRooms() }
@@ -116,6 +97,9 @@ class ChatDataRepository @Inject constructor(
         withContext(ioDispatcher) {
             runCatching { refreshChatRooms(uid) }
         }
+
+    override suspend fun getMessages(cid: String): Result<ChatMessage> =
+        runCatching { chatLocalDataSource.getChatMessage(cid) }
 
     override suspend fun syncLogs(uid: String, cid: String): Result<ChatMessage> =
         withContext(ioDispatcher) {
