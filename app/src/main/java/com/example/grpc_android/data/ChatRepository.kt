@@ -1,5 +1,6 @@
 package com.example.grpc_android.data
 
+import com.example.grpc_android.data.entity.ChatMessage
 import com.example.grpc_android.data.entity.ChatRoom
 import io.grpc.chat.*
 import kotlinx.coroutines.flow.Flow
@@ -22,5 +23,5 @@ interface ChatRepository {
 
     suspend fun syncChats(uid: String): Result<List<ChatRoom>>
 
-    suspend fun syncLogs(uid: String, cid: String): Result<SyncLogsResponse>
+    suspend fun syncLogs(uid: String, cid: String): Result<ChatMessage>
 }

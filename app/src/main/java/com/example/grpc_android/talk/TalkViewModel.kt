@@ -77,9 +77,9 @@ class TalkViewModel @Inject constructor(
     fun syncLogs() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.syncLogs(uid = uid, cid = cid)
         if (result.isSuccess) {
-            println()
+            setupMessages(result.getOrNull()?.messages?.map { it.mapToPresenter() } ?: emptyList())
         } else {
-            println()
+            _errMsg.value = result.exceptionOrNull()?.message
         }
     }
 

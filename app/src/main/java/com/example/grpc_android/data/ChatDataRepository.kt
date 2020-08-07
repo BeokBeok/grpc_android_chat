@@ -1,5 +1,6 @@
 package com.example.grpc_android.data
 
+import com.example.grpc_android.data.entity.ChatMessage
 import com.example.grpc_android.data.entity.ChatRoom
 import com.example.grpc_android.data.local.ChatLocalDataSource
 import com.example.grpc_android.data.remote.ChatRemoteDataSource
@@ -116,7 +117,7 @@ class ChatDataRepository @Inject constructor(
             runCatching { refreshChatRooms(uid) }
         }
 
-    override suspend fun syncLogs(uid: String, cid: String): Result<SyncLogsResponse> =
+    override suspend fun syncLogs(uid: String, cid: String): Result<ChatMessage> =
         withContext(ioDispatcher) {
             val meta = Meta.newBuilder().setUid(uid).setCid(cid).build()
             val request = SyncLogsRequest.newBuilder()
@@ -125,10 +126,12 @@ class ChatDataRepository @Inject constructor(
                 .setFetchCount(1_000)
                 .addAllLidRanges(emptyList<String>())
                 .build()
-            val syncLogsResponse = chatRemoteDataSource.syncLogs(request)
-            chatLocalDataSource.updateChatMessage(cid, syncLogsResponse)
 
-            runCatching { syncLogsResponse }
+            runCatching {
+                val syncLogsResponse = chatRemoteDataSource.syncLogs(request)
+                chatLocalDataSource.updateChatMessage(cid, syncLogsResponse)
+                chatLocalDataSource.getChatMessage(cid)
+            }
         }
 
     private suspend fun refreshChatRooms(uid: String): List<ChatRoom> {
