@@ -92,9 +92,9 @@ class TalkViewModel @Inject constructor(
             message.isShowProfile = true
             message.isShowHourMinute = true
             messages.add(message)
-            _messageList.value = messages
             return
         }
+        if (messages.map { it.lid }.contains(message.lid)) return
         if (!messages.last().isEqualDate(message)) {
             messages.add(MessageVO(date = message.date))
         }
