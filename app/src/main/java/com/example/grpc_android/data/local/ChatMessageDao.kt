@@ -14,10 +14,15 @@ interface ChatMessageDao : BaseDao<ChatMessage> {
     @Query("SELECT * FROM ChatMessage WHERE cid = :cid")
     suspend fun getByChatId(cid: String): ChatMessage?
 
+    @Query("SELECT lastSyncLid FROM ChatMessage WHERE cid = :cid")
+    suspend fun getLastSyncLidByChatId(cid: String): String?
+
     @Transaction
     suspend fun updateChatMessages(chatId: String, syncLogsResponse: SyncLogsResponse) {
         val cachedMessages = getByChatId(chatId)?.messages ?: emptyList()
-        val addedMessages = syncLogsResponse.messagesList.map { it.mapToEntity() }
+        val addedMessages = syncLogsResponse.messagesList
+            .map { it.mapToEntity() }
+            .also { if (it.isEmpty()) return }
         val updatedMessages = cachedMessages.toMutableList().apply { addAll(addedMessages) }
 
         if (cachedMessages.isEmpty()) {

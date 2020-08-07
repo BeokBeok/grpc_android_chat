@@ -103,10 +103,11 @@ class ChatDataRepository @Inject constructor(
 
     override suspend fun syncLogs(uid: String, cid: String): Result<ChatMessage> =
         withContext(ioDispatcher) {
+            val lastSyncLid = chatLocalDataSource.getLastSyncLid(cid)
             val meta = Meta.newBuilder().setUid(uid).setCid(cid).build()
             val request = SyncLogsRequest.newBuilder()
                 .setMeta(meta)
-                .setLastLid("0")
+                .setLastLid(lastSyncLid)
                 .setFetchCount(1_000)
                 .addAllLidRanges(emptyList<String>())
                 .build()
