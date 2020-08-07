@@ -1,5 +1,6 @@
 package com.example.grpc_android.data.local
 
+import com.example.grpc_android.data.entity.ChatMessage
 import com.example.grpc_android.data.entity.ChatRoom
 import io.grpc.chat.SyncChatsResponse
 import io.grpc.chat.SyncLogsResponse
@@ -27,4 +28,12 @@ class ChatLocalDataSource @Inject constructor(
         withContext(ioDispatcher) {
             chatMessageDao.updateChatMessages(chatId, syncLogsResponse)
         }
+
+    override suspend fun getChatMessage(chatId: String): ChatMessage = withContext(ioDispatcher) {
+        chatMessageDao.getByChatId(chatId) ?: ChatMessage(
+            chatId = "",
+            messages = listOf(),
+            lastSyncLid = ""
+        )
+    }
 }
