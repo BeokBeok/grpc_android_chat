@@ -19,7 +19,7 @@ import androidx.room.PrimaryKey
 data class ChatMessage(
     @PrimaryKey @ColumnInfo(name = "cid") val chatId: String,
 
-    @ColumnInfo(name = "messages")
+    @ColumnInfo(name = "logs")
     val messages: List<MessageEntity>,
 
     @ColumnInfo(name = "lastSyncLid")
