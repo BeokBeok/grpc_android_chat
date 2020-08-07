@@ -8,6 +8,7 @@ import com.example.grpc_android.data.local.ChatMessageDao
 import com.example.grpc_android.data.local.ChatRoomDao
 import com.example.grpc_android.data.remote.ChatRemoteDataSource
 import com.example.grpc_android.data.remote.ChatRemoteService
+import com.example.grpc_android.util.ChatEventReceiver
 import dagger.Module
 import dagger.Provides
 import io.grpc.chat.ChatGrpcKt
@@ -36,4 +37,9 @@ class DataModule {
         chatRemoteDataSource: ChatRemoteDataSource
     ): ChatRepository =
         ChatDataRepository(chatLocalDataSource, chatRemoteDataSource)
+
+    @Provides
+    @Singleton
+    fun providesChatEventReceiver(chatRepository: ChatRepository) =
+        ChatEventReceiver(chatRepository)
 }
