@@ -14,4 +14,6 @@ interface ChatLocalService {
     suspend fun updateChatMessage(chatId: String, syncLogsResponse: SyncLogsResponse)
 
     suspend fun getChatMessage(chatId: String): ChatMessage
+
+    suspend fun getLastSyncLid(chatId: String): String
 }

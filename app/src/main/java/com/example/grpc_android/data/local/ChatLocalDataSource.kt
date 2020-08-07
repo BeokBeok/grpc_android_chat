@@ -36,4 +36,8 @@ class ChatLocalDataSource @Inject constructor(
             lastSyncLid = ""
         )
     }
+
+    override suspend fun getLastSyncLid(chatId: String): String = withContext(ioDispatcher) {
+        chatMessageDao.getLastSyncLidByChatId(chatId) ?: "0"
+    }
 }
