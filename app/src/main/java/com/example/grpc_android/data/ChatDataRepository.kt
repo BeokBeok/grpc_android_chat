@@ -108,15 +108,13 @@ class ChatDataRepository @Inject constructor(
             runCatching {
                 val cachedChatMessages =
                     chatLocalDataSource.getChatMessage(cid).messages.sortedBy { it.lid }
-                val (lastSyncLid, lidRange) =
-                    chatLocalDataSource.getLastSyncLid(cid) to generateLidRange(cachedChatMessages)
+                val lastSyncLid = chatLocalDataSource.getLastSyncLid(cid)
+                val lidRange = generateLidRange(cachedChatMessages, lastSyncLid)
 
                 var syncLogsResponse = fetchChatMessages(
                     uid = uid,
                     cid = cid,
-                    lastSyncLid = lastSyncLid.coerceAtLeast(
-                        cachedChatMessages.lastOrNull()?.lid ?: "0"
-                    ),
+                    lastLid = cachedChatMessages.lastOrNull()?.lid ?: "0",
                     lidRange = lidRange
                 )
 
@@ -125,10 +123,11 @@ class ChatDataRepository @Inject constructor(
                     syncLogsResponse = fetchChatMessages(
                         uid = uid,
                         cid = cid,
-                        lastSyncLid = syncLogsResponse.lastSyncLid.coerceAtLeast(
-                            syncLogsResponse.messagesList.lastOrNull()?.lid ?: "0"
-                        ),
-                        lidRange = generateLidRange(syncLogsResponse.messagesList.map { it.mapToEntity() })
+                        lastLid = syncLogsResponse.messagesList.lastOrNull()?.lid ?: "0",
+                        lidRange = generateLidRange(
+                            syncLogsResponse.messagesList.map { it.mapToEntity() },
+                            syncLogsResponse.lastSyncLid
+                        )
                     )
                 }
                 chatLocalDataSource.updateChatMessage(cid, syncLogsResponse)
@@ -139,29 +138,34 @@ class ChatDataRepository @Inject constructor(
     private suspend fun fetchChatMessages(
         uid: String,
         cid: String,
-        lastSyncLid: String,
+        lastLid: String,
         lidRange: List<String>
     ): SyncLogsResponse {
         val meta = Meta.newBuilder().setUid(uid).setCid(cid).build()
         val request = SyncLogsRequest.newBuilder()
             .setMeta(meta)
-            .setLastLid(lastSyncLid)
+            .setLastLid(lastLid)
             .setFetchCount(SYNC_LOGS_FETCH_COUNT)
             .addAllLidRanges(lidRange)
             .build()
         return chatRemoteDataSource.syncLogs(request)
     }
 
-    private fun generateLidRange(cachedChatMessages: List<MessageEntity>): List<String> =
+    private fun generateLidRange(
+        cachedChatMessages: List<MessageEntity>,
+        startLid: String
+    ): List<String> =
         mutableListOf<String>().also {
-            cachedChatMessages.forEachIndexed { index, messageEntity ->
-                if (index + 1 > cachedChatMessages.lastIndex) return@forEachIndexed
-                if (messageEntity.lid == "0") return@forEachIndexed
-                if (messageEntity.lid != cachedChatMessages[index].prevLid) {
-                    it.add(messageEntity.lid)
-                    it.add(cachedChatMessages[index].lid)
+            cachedChatMessages
+                .filter { it.lid > startLid }
+                .forEachIndexed { index, messageEntity ->
+                    if (index + 1 > cachedChatMessages.lastIndex) return@forEachIndexed
+                    if (messageEntity.lid == "0") return@forEachIndexed
+                    if (messageEntity.lid != cachedChatMessages[index].prevLid) {
+                        it.add(messageEntity.lid)
+                        it.add(cachedChatMessages[index].lid)
+                    }
                 }
-            }
         }
 
     private suspend fun refreshChatRooms(uid: String): List<ChatRoom> {
