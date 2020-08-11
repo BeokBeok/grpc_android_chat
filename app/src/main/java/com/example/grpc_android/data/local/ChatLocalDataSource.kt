@@ -3,7 +3,6 @@ package com.example.grpc_android.data.local
 import com.example.grpc_android.data.entity.ChatMessage
 import com.example.grpc_android.data.entity.ChatRoom
 import io.grpc.chat.SyncChatsResponse
-import io.grpc.chat.SyncLogsResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,20 +23,18 @@ class ChatLocalDataSource @Inject constructor(
         chatRoomDao.get()
     }
 
-    override suspend fun updateChatMessage(chatId: String, syncLogsResponse: SyncLogsResponse) =
+    override suspend fun getChatMessages(cid: String): List<ChatMessage> =
         withContext(ioDispatcher) {
-            chatMessageDao.updateChatMessages(chatId, syncLogsResponse)
+            chatMessageDao.getByCid(cid)
         }
 
-    override suspend fun getChatMessage(chatId: String): ChatMessage = withContext(ioDispatcher) {
-        chatMessageDao.getByChatId(chatId) ?: ChatMessage(
-            chatId = "",
-            messages = listOf(),
-            lastSyncLid = ""
-        )
+    override suspend fun getLastSyncLid(cid: String): String = withContext(ioDispatcher) {
+        chatRoomDao.getLastSyncLidByCid(cid)
     }
 
-    override suspend fun getLastSyncLid(chatId: String): String = withContext(ioDispatcher) {
-        chatMessageDao.getLastSyncLidByChatId(chatId) ?: "0"
+    override suspend fun updateChatMessage(chatMessages: List<ChatMessage>) {
+        withContext(ioDispatcher) {
+            chatMessages.map { chatMessageDao.insert(it) }
+        }
     }
 }

@@ -47,7 +47,7 @@ class TalkViewModel @Inject constructor(
     fun getMessages() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.getMessages(cid = cid)
         if (result.isSuccess) {
-            setupMessages(result.getOrNull()?.messages?.map { it.mapToPresenter() } ?: emptyList())
+            setupMessages(result.getOrNull()?.map { it.mapToPresenter() } ?: emptyList())
         } else {
             _errMsg.value = result.exceptionOrNull()?.message
         }
@@ -74,7 +74,7 @@ class TalkViewModel @Inject constructor(
     fun syncLogs() = viewModelScope.launch(coroutineExceptionHandler) {
         val result = chatRepository.syncLogs(uid = uid, cid = cid)
         if (result.isSuccess) {
-            setupMessages(result.getOrNull()?.messages?.map { it.mapToPresenter() } ?: emptyList())
+            setupMessages(result.getOrNull()?.map { it.mapToPresenter() } ?: emptyList())
         } else {
             _errMsg.value = result.exceptionOrNull()?.message
         }

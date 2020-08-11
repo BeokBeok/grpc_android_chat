@@ -2,7 +2,6 @@ package com.example.grpc_android.data
 
 import com.example.grpc_android.data.entity.ChatMessage
 import com.example.grpc_android.data.entity.ChatRoom
-import com.example.grpc_android.data.entity.MessageEntity
 import com.example.grpc_android.data.entity.mapToEntity
 import com.example.grpc_android.data.local.ChatLocalDataSource
 import com.example.grpc_android.data.remote.ChatRemoteDataSource
@@ -100,14 +99,14 @@ class ChatDataRepository @Inject constructor(
             runCatching { refreshChatRooms(uid) }
         }
 
-    override suspend fun getMessages(cid: String): Result<ChatMessage> =
-        runCatching { chatLocalDataSource.getChatMessage(cid) }
+    override suspend fun getMessages(cid: String): Result<List<ChatMessage>> =
+        runCatching { chatLocalDataSource.getChatMessages(cid) }
 
-    override suspend fun syncLogs(uid: String, cid: String): Result<ChatMessage> =
+    override suspend fun syncLogs(uid: String, cid: String): Result<List<ChatMessage>> =
         withContext(ioDispatcher) {
             runCatching {
                 val cachedChatMessages =
-                    chatLocalDataSource.getChatMessage(cid).messages.sortedBy { it.lid }
+                    chatLocalDataSource.getChatMessages(cid)
                 val lastSyncLid = chatLocalDataSource.getLastSyncLid(cid)
                 val lidRange = generateLidRange(cachedChatMessages, lastSyncLid)
 
@@ -119,19 +118,25 @@ class ChatDataRepository @Inject constructor(
                 )
 
                 while (!syncLogsResponse.eof) {
-                    chatLocalDataSource.updateChatMessage(cid, syncLogsResponse)
+                    chatLocalDataSource.updateChatMessage(
+                        syncLogsResponse.messagesList
+                            .map { it.mapToEntity(cid) }
+                    )
                     syncLogsResponse = fetchChatMessages(
                         uid = uid,
                         cid = cid,
                         lastLid = syncLogsResponse.messagesList.lastOrNull()?.lid ?: "0",
                         lidRange = generateLidRange(
-                            syncLogsResponse.messagesList.map { it.mapToEntity() },
+                            syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
                             syncLogsResponse.lastSyncLid
                         )
                     )
                 }
-                chatLocalDataSource.updateChatMessage(cid, syncLogsResponse)
-                return@runCatching chatLocalDataSource.getChatMessage(cid)
+                chatLocalDataSource.updateChatMessage(
+                    syncLogsResponse.messagesList
+                        .map { it.mapToEntity(cid) }
+                )
+                return@runCatching chatLocalDataSource.getChatMessages(cid)
             }
         }
 
@@ -152,17 +157,17 @@ class ChatDataRepository @Inject constructor(
     }
 
     private fun generateLidRange(
-        cachedChatMessages: List<MessageEntity>,
+        cachedChatMessages: List<ChatMessage>,
         startLid: String
     ): List<String> =
         mutableListOf<String>().also {
             cachedChatMessages
                 .filter { it.lid > startLid }
-                .forEachIndexed { index, messageEntity ->
+                .forEachIndexed { index, chatMessage ->
                     if (index + 1 > cachedChatMessages.lastIndex) return@forEachIndexed
-                    if (messageEntity.lid == "0") return@forEachIndexed
-                    if (messageEntity.lid != cachedChatMessages[index].prevLid) {
-                        it.add(messageEntity.lid)
+                    if (chatMessage.lid == "0") return@forEachIndexed
+                    if (chatMessage.lid != cachedChatMessages[index].prevLid) {
+                        it.add(chatMessage.lid)
                         it.add(cachedChatMessages[index].lid)
                     }
                 }

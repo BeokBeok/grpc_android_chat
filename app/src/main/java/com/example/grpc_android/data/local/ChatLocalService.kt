@@ -3,7 +3,6 @@ package com.example.grpc_android.data.local
 import com.example.grpc_android.data.entity.ChatMessage
 import com.example.grpc_android.data.entity.ChatRoom
 import io.grpc.chat.SyncChatsResponse
-import io.grpc.chat.SyncLogsResponse
 
 interface ChatLocalService {
 
@@ -11,9 +10,9 @@ interface ChatLocalService {
 
     suspend fun getChatRooms(): List<ChatRoom>
 
-    suspend fun updateChatMessage(chatId: String, syncLogsResponse: SyncLogsResponse)
+    suspend fun getChatMessages(cid: String): List<ChatMessage>
 
-    suspend fun getChatMessage(chatId: String): ChatMessage
+    suspend fun getLastSyncLid(cid: String): String
 
-    suspend fun getLastSyncLid(chatId: String): String
+    suspend fun updateChatMessage(chatMessages: List<ChatMessage>)
 }

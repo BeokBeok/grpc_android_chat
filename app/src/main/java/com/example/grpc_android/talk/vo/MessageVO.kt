@@ -1,6 +1,6 @@
 package com.example.grpc_android.talk.vo
 
-import com.example.grpc_android.data.entity.MessageEntity
+import com.example.grpc_android.data.entity.ChatMessage
 import com.example.grpc_android.util.TimeConverter
 import io.grpc.chat.Message
 
@@ -31,7 +31,7 @@ fun Message.mapToPresenter() = MessageVO(
     lid = lid
 )
 
-fun MessageEntity.mapToPresenter() = MessageVO(
+fun ChatMessage.mapToPresenter() = MessageVO(
     uid = uid,
     date = TimeConverter.lidToYearMonthDay(lid),
     hourMinute = TimeConverter.lidToHourMinute(lid),

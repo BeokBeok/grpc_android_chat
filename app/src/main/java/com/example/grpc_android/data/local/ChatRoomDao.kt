@@ -10,19 +10,22 @@ import io.grpc.chat.SyncChatsResponse
 @Dao
 interface ChatRoomDao : BaseDao<ChatRoom> {
 
-    @Query("SELECT * FROM ChatRoom ORDER BY cid")
+    @Query("SELECT * FROM Chats ORDER BY cid")
     suspend fun get(): List<ChatRoom>
+
+    @Query("SELECT lastSyncLid FROM Chats WHERE cid = :cid")
+    suspend fun getLastSyncLidByCid(cid: String): String
 
     @Transaction
     suspend fun updateChatRoomList(syncChatsResponse: SyncChatsResponse) {
         syncChatsResponse.run {
             delCidsList
                 .also { if (it.isEmpty()) return@also }
-                .map(::ChatRoom)
+                .map { ChatRoom(chatId = it) }
                 .map { delete(it) }
             updCidsList
                 .also { if (it.isEmpty()) return@also }
-                .map(::ChatRoom)
+                .map { ChatRoom(chatId = it) }
                 .map { insert(it) }
         }
     }
