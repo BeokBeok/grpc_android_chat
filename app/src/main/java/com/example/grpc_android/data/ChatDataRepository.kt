@@ -119,8 +119,8 @@ class ChatDataRepository @Inject constructor(
 
                 while (!syncLogsResponse.eof) {
                     chatLocalDataSource.updateChatMessage(
-                        syncLogsResponse.messagesList
-                            .map { it.mapToEntity(cid) }
+                        syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
+                        ChatRoom(chatId = cid, lastSyncLid = syncLogsResponse.lastSyncLid)
                     )
                     syncLogsResponse = fetchChatMessages(
                         uid = uid,
@@ -133,8 +133,8 @@ class ChatDataRepository @Inject constructor(
                     )
                 }
                 chatLocalDataSource.updateChatMessage(
-                    syncLogsResponse.messagesList
-                        .map { it.mapToEntity(cid) }
+                    syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
+                    ChatRoom(chatId = cid, lastSyncLid = syncLogsResponse.lastSyncLid)
                 )
                 return@runCatching chatLocalDataSource.getChatMessages(cid)
             }

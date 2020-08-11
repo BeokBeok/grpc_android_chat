@@ -32,9 +32,10 @@ class ChatLocalDataSource @Inject constructor(
         chatRoomDao.getLastSyncLidByCid(cid)
     }
 
-    override suspend fun updateChatMessage(chatMessages: List<ChatMessage>) {
+    override suspend fun updateChatMessage(chatMessages: List<ChatMessage>, chatRoom: ChatRoom) {
         withContext(ioDispatcher) {
             chatMessages.map { chatMessageDao.insert(it) }
+            chatRoomDao.update(chatRoom)
         }
     }
 }
