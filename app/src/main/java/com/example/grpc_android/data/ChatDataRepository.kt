@@ -107,6 +107,12 @@ class ChatDataRepository @Inject constructor(
             runCatching { refreshChatMessage(cid, uid) }
         }
 
+    override suspend fun saveMessage(cid: String, message: Message?) {
+        withContext(ioDispatcher) {
+            runCatching { chatLocalDataSource.insertChatMessage(message?.mapToEntity(cid)) }
+        }
+    }
+
     private suspend fun refreshChatMessage(cid: String, uid: String): List<ChatMessage> {
         val cachedChatMessages = chatLocalDataSource.getChatMessages(cid)
         val lastSyncLid = chatLocalDataSource.getLastSyncLid(cid)

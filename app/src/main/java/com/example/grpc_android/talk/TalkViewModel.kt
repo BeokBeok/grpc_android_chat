@@ -53,21 +53,23 @@ class TalkViewModel @Inject constructor(
         }
     }
 
-    fun sendMessage(msg: String) =
-        viewModelScope.launch(coroutineExceptionHandler) {
-            val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
-            if (result.isSuccess) {
-                updateMessage(result.getOrNull()?.message?.mapToPresenter() ?: return@launch)
-                _messageList.value = messages
-                _successSendMessage.value = true
-            } else {
-                _errMsg.value = result.getOrThrow().error.message
-            }
+    fun sendMessage(msg: String) = viewModelScope.launch(coroutineExceptionHandler) {
+        val result = chatRepository.sendMessage(uid = uid, cid = cid, msg = msg)
+        if (result.isSuccess) {
+            updateMessage(result.getOrNull()?.message?.mapToPresenter() ?: return@launch)
+            chatRepository.saveMessage(cid, result.getOrNull()?.message)
+            _messageList.value = messages
+            _successSendMessage.value = true
+        } else {
+            _errMsg.value = result.getOrThrow().error.message
         }
+    }
 
     fun receiveMessage(receive: Receive) = viewModelScope.launch(coroutineExceptionHandler) {
         if (receive.eventTypeValue != EventType.MESSAGE_VALUE) return@launch
-        updateMessage(receive.event.message.mapToPresenter())
+        val receivedMessage = receive.event.message
+        updateMessage(receivedMessage.mapToPresenter())
+        chatRepository.saveMessage(cid, receivedMessage)
         _messageList.value = messages
     }
 
@@ -81,9 +83,7 @@ class TalkViewModel @Inject constructor(
     }
 
     private fun setupMessages(data: List<MessageVO>) {
-        for (element in data) {
-            updateMessage(element)
-        }
+        data.map { updateMessage(it) }
         _messageList.value = messages
     }
 

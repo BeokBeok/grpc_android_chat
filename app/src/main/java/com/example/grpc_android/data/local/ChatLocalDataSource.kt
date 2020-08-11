@@ -15,22 +15,16 @@ class ChatLocalDataSource @Inject constructor(
     private val ioDispatcher = Dispatchers.IO
 
     override suspend fun updateChatRoom(syncChatsResponse: SyncChatsResponse) =
-        withContext(ioDispatcher) {
-            chatRoomDao.updateChatRoomList(syncChatsResponse)
-        }
+        withContext(ioDispatcher) { chatRoomDao.updateChatRoomList(syncChatsResponse) }
 
-    override suspend fun getChatRooms(): List<ChatRoom> = withContext(ioDispatcher) {
-        chatRoomDao.get()
-    }
+    override suspend fun getChatRooms(): List<ChatRoom> =
+        withContext(ioDispatcher) { chatRoomDao.get() }
 
     override suspend fun getChatMessages(cid: String): List<ChatMessage> =
-        withContext(ioDispatcher) {
-            chatMessageDao.getByCid(cid)
-        }
+        withContext(ioDispatcher) { chatMessageDao.getByCid(cid) }
 
-    override suspend fun getLastSyncLid(cid: String): String = withContext(ioDispatcher) {
-        chatRoomDao.getLastSyncLidByCid(cid)
-    }
+    override suspend fun getLastSyncLid(cid: String): String =
+        withContext(ioDispatcher) { chatRoomDao.getLastSyncLidByCid(cid) }
 
     override suspend fun updateChatMessage(chatMessages: List<ChatMessage>, chatRoom: ChatRoom) {
         withContext(ioDispatcher) {
@@ -38,4 +32,10 @@ class ChatLocalDataSource @Inject constructor(
             chatRoomDao.update(chatRoom)
         }
     }
+
+    override suspend fun insertChatMessage(chatMessage: ChatMessage?) =
+        withContext(ioDispatcher) {
+            if (chatMessage == null) return@withContext
+            chatMessageDao.insert(chatMessage)
+        }
 }

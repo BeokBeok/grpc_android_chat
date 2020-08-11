@@ -15,4 +15,6 @@ interface ChatLocalService {
     suspend fun getLastSyncLid(cid: String): String
 
     suspend fun updateChatMessage(chatMessages: List<ChatMessage>, chatRoom: ChatRoom)
+
+    suspend fun insertChatMessage(chatMessage: ChatMessage?)
 }
