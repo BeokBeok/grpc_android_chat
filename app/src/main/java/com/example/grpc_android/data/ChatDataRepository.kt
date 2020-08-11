@@ -104,41 +104,42 @@ class ChatDataRepository @Inject constructor(
 
     override suspend fun syncLogs(uid: String, cid: String): Result<List<ChatMessage>> =
         withContext(ioDispatcher) {
-            runCatching {
-                val cachedChatMessages =
-                    chatLocalDataSource.getChatMessages(cid)
-                val lastSyncLid = chatLocalDataSource.getLastSyncLid(cid)
-                val lidRange = generateLidRange(cachedChatMessages, lastSyncLid)
-
-                var syncLogsResponse = fetchChatMessages(
-                    uid = uid,
-                    cid = cid,
-                    lastLid = cachedChatMessages.lastOrNull()?.lid ?: "0",
-                    lidRange = lidRange
-                )
-
-                while (!syncLogsResponse.eof) {
-                    chatLocalDataSource.updateChatMessage(
-                        syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
-                        ChatRoom(chatId = cid, lastSyncLid = syncLogsResponse.lastSyncLid)
-                    )
-                    syncLogsResponse = fetchChatMessages(
-                        uid = uid,
-                        cid = cid,
-                        lastLid = syncLogsResponse.messagesList.lastOrNull()?.lid ?: "0",
-                        lidRange = generateLidRange(
-                            syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
-                            syncLogsResponse.lastSyncLid
-                        )
-                    )
-                }
-                chatLocalDataSource.updateChatMessage(
-                    syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
-                    ChatRoom(chatId = cid, lastSyncLid = syncLogsResponse.lastSyncLid)
-                )
-                return@runCatching chatLocalDataSource.getChatMessages(cid)
-            }
+            runCatching { refreshChatMessage(cid, uid) }
         }
+
+    private suspend fun refreshChatMessage(cid: String, uid: String): List<ChatMessage> {
+        val cachedChatMessages = chatLocalDataSource.getChatMessages(cid)
+        val lastSyncLid = chatLocalDataSource.getLastSyncLid(cid)
+        val lidRange = generateLidRange(cachedChatMessages, lastSyncLid)
+
+        var syncLogsResponse = fetchChatMessages(
+            uid = uid,
+            cid = cid,
+            lastLid = cachedChatMessages.lastOrNull()?.lid ?: "0",
+            lidRange = lidRange
+        )
+
+        while (!syncLogsResponse.eof) {
+            chatLocalDataSource.updateChatMessage(
+                syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
+                ChatRoom(chatId = cid, lastSyncLid = syncLogsResponse.lastSyncLid)
+            )
+            syncLogsResponse = fetchChatMessages(
+                uid = uid,
+                cid = cid,
+                lastLid = syncLogsResponse.messagesList.lastOrNull()?.lid ?: "0",
+                lidRange = generateLidRange(
+                    syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
+                    syncLogsResponse.lastSyncLid
+                )
+            )
+        }
+        chatLocalDataSource.updateChatMessage(
+            syncLogsResponse.messagesList.map { it.mapToEntity(cid) },
+            ChatRoom(chatId = cid, lastSyncLid = syncLogsResponse.lastSyncLid)
+        )
+        return chatLocalDataSource.getChatMessages(cid)
+    }
 
     private suspend fun fetchChatMessages(
         uid: String,
