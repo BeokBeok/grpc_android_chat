@@ -1,4 +1,4 @@
-# gRPC_android_chat
+# gRPC_chat
 gRPC 를 활용하여 채팅 구현
 
 # Demo
