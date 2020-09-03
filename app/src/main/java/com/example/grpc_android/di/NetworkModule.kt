@@ -35,7 +35,7 @@ class NetworkModule {
             ChatGrpcKt.ChatCoroutineStub(channel)
 
     companion object {
-        private const val URL = "qa-chat.conects.com"
-        private const val PORT = 10620
+        private const val URL = "url"
+        private const val PORT = 0
     }
 }
