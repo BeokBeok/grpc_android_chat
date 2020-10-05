@@ -51,6 +51,7 @@ message EventListenRequest {
 message CreateRequest {
     Meta meta = 1;
     string peer = 2;
+    int32 chat_type = 3;
 }
 
 message CreateResponse{
@@ -102,15 +103,15 @@ message ReadInfo {
 
 message ChatInRequest {
     Meta meta = 1;
-    string chat_in_checksum = 2;
+    string chat_in_checksum= 2;
     string chat_public_checksum = 3;
 }
 
 message ChatInResponse {
     string cid = 1;
-    repeated string active_uids = 2;
+    repeated string active_uids = 2; 
     repeated ReadInfo read_infos = 3;
-    string chat_in_checksum = 4;
+    string chat_in_checksum= 4;
     string chat_public_checksum = 5;
     Error error = 6;
 }
@@ -155,7 +156,7 @@ message ReceiveAckResponse {
 // ReadAck ...
 message ReadAckRequest {
     Meta meta = 1;
-    string lid = 2;
+    string lid = 2; 
 }
 
 message ReadAckResponse {
@@ -184,7 +185,7 @@ message SyncChatsResponse {
 message SyncLogsRequest {
     Meta meta = 1;
     repeated string lid_ranges = 2;
-    int32 fetch_count = 3;
+    int32 fetch_count = 3; 
     string last_lid = 4;
 }
 
@@ -196,6 +197,18 @@ message SyncLogsResponse {
     string read_msg_lid = 5;
     string sync_chat_checksum = 6;
     Error error = 7;
+}
+
+// SyncRead ...
+message SyncReadRequest {
+    Meta meta = 1;
+    string read_msg_lid = 2;
+}
+
+message SyncReadResponse {
+    string cid = 1;
+    string read_msg_lid = 2;
+    Error error = 3;
 }
 
 // Leave ...
@@ -212,15 +225,30 @@ message LeaveResponse {
 }
 
 // Invite 
+message InvitedPeer {
+    string uid = 1;
+    int32 join_type = 2;
+}
+
 message InviteRequest {
     Meta meta = 1;
-    repeated string peers = 2;
+    repeated InvitedPeer peers = 2;
 }
 
 message InviteResponse {
     Message message = 1;
     string sync_chat_checksum = 2;
     Error error = 3;
+}
+
+// Delete (Only Used in Test)
+message DeleteRequest {
+    Meta meta = 1;
+}
+
+message DeleteResponse {
+    repeated string del_cids = 1;
+    Error error = 2;
 }
 
 // Delivery ...
@@ -232,4 +260,27 @@ message DeliveryRequest {
 message DeliveryResponse {
     repeated string not_found = 1;
     Error error = 2;
+}
+
+// Join 
+message JoinRequest {
+    Meta meta = 1;
+}
+
+message JoinResponse {
+    Message message = 1;
+    string sync_chat_checksum = 2;
+    Error error = 3;
+}
+
+// Kick 
+message KickRequest {
+    Meta meta = 1;
+    repeated string peers = 2;
+}
+
+message KickResponse {
+    Message message = 1;
+    string sync_chat_checksum = 2;
+    Error error = 3;
 }

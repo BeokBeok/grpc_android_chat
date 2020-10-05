@@ -23,122 +23,28 @@ package model;
 
 import "chat-domain.proto";
 import "event-domain.proto";
-import "google/api/annotations.proto";
-import "annotations.proto";
-
-// These annotations are used when generating the OpenAPI file.
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-  info: {
-    title: "Chat API";
-    version: "1.0";
-    description: "gRPC-gateway api";
-    contact: {
-      name: "ST UNITAS"
-      url: "https://conects.com";
-    };
-  };
-  schemes: HTTP;
-  security_definitions: {
-    security: {
-      key: "bearer";
-      value: {
-        type: TYPE_API_KEY;
-        in: IN_HEADER;
-        name: "Authorization";
-        description: "Scheme: Bearer JWT"
-      };
-    };
-  };
-  security: {
-    security_requirement: {
-      key: "bearer";
-    };
-  };
-};
 
 service Chat {
-  rpc EventListen(EventListenRequest) returns (stream Receive) {
-    option (google.api.http) = {
-      get: "/api/v1/stream"
-    };
-  }
-  rpc Create(CreateRequest) returns (CreateResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/chats"
-      body: "*"
-    };
-  }
-  rpc Write(WriteRequest) returns (WriteResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/chats/{meta.cid}/message"
-      body: "*"
-    };
-  }
-  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/chats/{meta.cid}/users"
-    };
-  }
-  rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/chats"
-    };
-  }
-  rpc ChatIn(ChatInRequest) returns (ChatInResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/chats/{meta.cid}/in"
-      body: "*"
-    };
-  }
-  rpc ChatOut(ChatOutRequest) returns (ChatOutResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/chats/{meta.cid}/out"
-      body: "*"
-    };
-  }
-  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/chats/{meta.cid}/messages"
-    };
-  }
-  rpc ReceiveAck(ReceiveAckRequest) returns (ReceiveAckResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/receiveack"
-      body: "*"
-    };
-  }
-  rpc ReadAck(ReadAckRequest) returns (ReadAckResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/readack"
-      body: "*"
-    };
-  }
-  rpc SyncChats(SyncChatsRequest) returns (SyncChatsResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/syncchats"
-      body: "*"
-    };
-  }
-  rpc SyncLogs(SyncLogsRequest) returns (SyncLogsResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/chats/{meta.cid}/synclogs"
-      body: "*"
-    };
-  }
-  rpc Leave(LeaveRequest) returns (LeaveResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/chats/{meta.cid}/leave"
-      body: "*"
-    };
-  }
-  rpc Invite(InviteRequest) returns (InviteResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/chats/{meta.cid}/invite"
-      body: "*"
-    };
-  }
+    rpc EventListen(EventListenRequest) returns (stream Receive) {}
+    rpc Create(CreateRequest) returns (CreateResponse) {}
+    rpc Write(WriteRequest) returns (WriteResponse) {}
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
+    rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse) {}
+    rpc ChatIn(ChatInRequest) returns (ChatInResponse) {}
+    rpc ChatOut(ChatOutRequest) returns (ChatOutResponse) {}
+    rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse) {}
+    rpc ReceiveAck(ReceiveAckRequest) returns (ReceiveAckResponse) {}
+    rpc ReadAck(ReadAckRequest) returns (ReadAckResponse) {}
+    rpc SyncChats(SyncChatsRequest) returns (SyncChatsResponse) {}
+    rpc SyncLogs(SyncLogsRequest) returns (SyncLogsResponse) {}
+    rpc SyncRead(SyncReadRequest) returns (SyncReadResponse) {}
+    rpc Leave(LeaveRequest) returns (LeaveResponse) {}
+    rpc Invite(InviteRequest) returns (InviteResponse) {}
+    rpc Join(JoinRequest) returns (JoinResponse) {}
+    rpc Kick(KickRequest) returns (KickResponse) {}
+    rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 }
 
 service ChatRoute {
-  rpc Delivery(DeliveryRequest) returns (DeliveryResponse) {}
+    rpc Delivery(DeliveryRequest) returns (DeliveryResponse) {}
 }
