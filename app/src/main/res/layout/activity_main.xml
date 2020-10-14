@@ -120,5 +120,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_get_message" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_join"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="join"
+            android:onClick="@{() -> vm.join(tietUid.getText().toString(), tietCid.getText().toString())}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_get_rooms" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

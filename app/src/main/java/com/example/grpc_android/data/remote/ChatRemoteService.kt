@@ -28,4 +28,6 @@ interface ChatRemoteService {
     suspend fun syncChats(request: SyncChatsRequest): SyncChatsResponse
 
     suspend fun syncLogs(request: SyncLogsRequest): SyncLogsResponse
+
+    suspend fun join(request: JoinRequest): JoinResponse
 }

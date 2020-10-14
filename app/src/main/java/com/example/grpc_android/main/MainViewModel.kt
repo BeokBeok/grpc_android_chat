@@ -78,4 +78,13 @@ class MainViewModel @Inject constructor(
             _errMsg.value = result.exceptionOrNull()?.message
         }
     }
+
+    fun join(uid: String, cid: String) = viewModelScope.launch(coroutineExceptionHandler) {
+        val result = chatRepository.join(uid = uid, cid = cid)
+        if (result.isSuccess) {
+            println("join is ${result.getOrNull()}")
+        } else {
+            _errMsg.value = result.getOrThrow().error.message
+        }
+    }
 }

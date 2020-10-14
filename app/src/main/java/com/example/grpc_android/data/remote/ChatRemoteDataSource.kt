@@ -55,4 +55,7 @@ class ChatRemoteDataSource @Inject constructor(
 
     override suspend fun syncLogs(request: SyncLogsRequest): SyncLogsResponse =
         headerAttachedService.syncLogs(request)
+
+    override suspend fun join(request: JoinRequest): JoinResponse =
+        headerAttachedService.join(request)
 }

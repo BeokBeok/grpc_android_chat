@@ -83,7 +83,7 @@ class TalkViewModel @Inject constructor(
     }
 
     private fun setupMessages(data: List<MessageVO>) {
-        data.map { updateMessage(it) }
+        data.forEach { updateMessage(it) }
         _messageList.value = messages
     }
 

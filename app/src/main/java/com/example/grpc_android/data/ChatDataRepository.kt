@@ -113,6 +113,19 @@ class ChatDataRepository @Inject constructor(
         }
     }
 
+    override suspend fun join(uid: String, cid: String): Result<JoinResponse> =
+        withContext(ioDispatcher) {
+            val meta = Meta.newBuilder()
+                .setUid(uid)
+                .setCid(cid)
+                .build()
+            val request = JoinRequest.newBuilder()
+                .setMeta(meta)
+                .build()
+
+            runCatching { chatRemoteDataSource.join(request) }
+        }
+
     private suspend fun refreshChatMessage(cid: String, uid: String): List<ChatMessage> {
         val cachedChatMessages = chatLocalDataSource.getChatMessages(cid)
         val lastSyncLid = chatLocalDataSource.getLastSyncLid(cid)
